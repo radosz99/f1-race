@@ -18,12 +18,12 @@ private:
 	std::array<Bolide, 6> bolides
 	{
 	   {
-			{ 36, 20, 'r', 0, road},
-			{ 29, 20, 'r', 1, road},
-			{ 36, 30, 'r', 2, road},
-			{ 29, 30, 'r', 3, road},
-			{ 36, 40, 'r', 4, road},
-			{ 29, 40, 'r', 5, road},
+			{ 0, road},
+			{ 1, road},
+			{ 2, road},
+			{ 3, road},
+			{ 4, road},
+			{ 5, road},
 		  }
 	};
 

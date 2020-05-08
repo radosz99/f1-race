@@ -20,10 +20,19 @@ UI::~UI()
 {
     keyboardThread->join();
     refreshThread->join();
+    destroyWindow(bolide1);
+    destroyWindow(bolide2);
+    destroyWindow(bolide3);
+    destroyWindow(bolide4);
+    destroyWindow(bolide5);
+    destroyWindow(bolide6);
+    endwin();
+
 }
 
 void UI::destroyWindow(WINDOW* window)
 {
+
 	wborder(window, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
 	wrefresh(window);
 	delwin(window);
@@ -31,8 +40,6 @@ void UI::destroyWindow(WINDOW* window)
 
 void UI::initializeWindow()
 {
-
-    race_cont = true;
 	printw("Press ESC to exit");
     const std::string centerHeader = "F1 Race";
     const std::string rightHeader = "Radoslaw Lis SO2 2019/2020";
@@ -111,7 +118,8 @@ void UI::refreshView()
     mvprintw(34, 140, blank.c_str());
     mvprintw(29, 140, blank.c_str());
     mvprintw(30, 140, blank.c_str());
-    while(race_cont==true)
+
+    while(road.getRaceCont())
     {
 
         init_color(COLOR_BLUE, 50,600,1000);
@@ -172,7 +180,8 @@ void UI::update()
     {
         attron(COLOR_PAIR(i+2));
         info = std::to_string(bolides[i].getId()) + " ma jeszcze paliwa " + std::to_string(bolides[i].getFuelCondition()) + 
-        " a koordynaty " + std::to_string(road.getCoords(i).first) + " i " + std::to_string(road.getCoords(i).second) + "  " + bolides[i].getStateString();
+        " a koordynaty " + std::to_string(road.getCoords(i).first) + " i " + std::to_string(road.getCoords(i).second) + " i " + bolides[i].getStateString() + " i " + 
+        bolides[i].getDirectionString() + "                              ";
         mvprintw(45+i, 3, info.c_str());
         attroff(COLOR_PAIR(i+2));
     }
@@ -190,15 +199,14 @@ WINDOW *UI::create_newwin(int height, int width, int starty, int startx)
 
 void UI::endVisualisation()
 {
-    while (true)
+    while (road.getRaceCont())
     {
         int keyPressed = getch();
 
         switch (keyPressed)
         {
             case 27: // ESCAPE KEY
-                race_cont = false;
-                endwin();
+                road.setRaceCont(false);
                 break;
         }
     }

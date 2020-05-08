@@ -1,7 +1,8 @@
 #include "Bolide.hpp"
 #include "Random.hpp"
+#include "Direction.hpp"
 
-Bolide::Bolide(int x, int y, char dir, int id, Road &road): x(x), y(y), direction(dir), id(id), road(road),thread(&Bolide::run, this)
+Bolide::Bolide(int id, Road &road): id(id), road(road),thread(&Bolide::run, this)
 {
     fuelCondition = 1.0f;
     distance = 0;
@@ -14,60 +15,99 @@ Bolide::~Bolide()
 
 void Bolide::run()
 {
-    while(true)
+    int counter = 0;
+    while(road.getRaceCont())
     {
         fuelCondition = fuelCondition * 0.99;
-        int delay = Random().randomInt(60, 150);
-        if(direction =='d' or direction == 'u')
+        int delay = Random().randomInt(10 * (6-id), 80);
+        int x = road.getCoords(id).first;
+        int y = road.getCoords(id).second;
+
+        if(fuelCondition < 0.2)
         {
-            delay*=2;
+            setState(State::DRIVING_NEED_TO_PIT_STOP);
+            if(direction == Direction::RIGHT)
+            {
+                direction = Direction::RIGHT_DOWN;
+            }
         }
-        if(direction == 'r')
+
+        if(direction == Direction::DOWN or direction == Direction::UP)
+        {
+            delay *= 2;
+        }
+
+        if(direction == Direction::RIGHT || direction == Direction::RIGHT_DOWN)
         {
             int help_y = y + 1;
-            if(!road.checkIfPositionOccupied(x, help_y, 'r', id))
+            if(direction == Direction::RIGHT_DOWN)
+            {
+                counter++;
+                if(x < 36 && counter > 3)
+                {
+                    x = x + 1;
+                    counter = 0;
+                }
+                else
+                {
+                    direction = Direction::RIGHT;
+                }
+                
+            }
+            if(!road.checkIfPositionOccupied(x, help_y, Direction::RIGHT, id))
             {
                 y++;
             }
-            if(y==109)
+            
+            if(y==109 && state == State::DRIVING)
             {
-                direction = 'u';
+                direction = Direction::UP;
+            }
+            else if (state == State::DRIVING_NEED_TO_PIT_STOP && y == 130)
+            {
+                setState(State::WAITING_FOR_PIT_STOP);
+                //direction = Direction::UP;
             }
         }
-        if(direction == 'u')
+        if(direction == Direction::UP)
         {
             int help_x = x - 1;
-            if(!road.checkIfPositionOccupied(help_x, y, 'u', id))
+            if(!road.checkIfPositionOccupied(help_x, y, Direction::UP, id))
             {
                 x--;
             }
             if(x==3)
             {
-                direction = 'l';
+                direction = Direction::LEFT;
             }
         }
-        if(direction == 'l')
+        if(direction == Direction::LEFT)
         {
+            if(state == State::PIT_STOP)
+            {
+                setState(State::DRIVING);
+                fuelCondition = 1.0f;
+            }
             int help_y = y - 1;
-            if(!road.checkIfPositionOccupied(x, help_y, 'l', id))
+            if(!road.checkIfPositionOccupied(x, help_y, Direction::LEFT, id))
             {
                 y--;
             }
             if(y==14)
             {
-                direction = 'd';
+                direction = Direction::DOWN;
             }
         }
-        if(direction == 'd')
+        if(direction == Direction::DOWN)
         {
             int help_x = x + 1;
-            if(!road.checkIfPositionOccupied(help_x, y, 'd', id))
+            if(!road.checkIfPositionOccupied(help_x, y, Direction::DOWN, id))
             {
                 x++;
             }
             if(x==29)
             {
-                direction = 'r';
+                direction = Direction::RIGHT;
             }
         }
         road.setCoords(id, std::make_pair(x,y));
@@ -76,24 +116,31 @@ void Bolide::run()
     }
 }
 
-int Bolide::getX() const
-{
-    return x;
-}
-
-int Bolide::getY() const
-{
-    return y;
-}
-
-void Bolide::setDirection(char dir)
-{
-    direction = dir;
-}
-
-char Bolide::getDirection() const
+Direction Bolide::getDirection() const
 {
     return direction;
+}
+
+std::string Bolide::getDirectionString() const
+{
+    switch (direction)
+    {
+        case Direction::DOWN:
+            return "DOWN";
+        case Direction::RIGHT_DOWN:
+            return "RIGHT_DOWN";
+        case Direction::RIGHT:
+            return "RIGHT";
+        case Direction::UP:
+            return "UP";
+        case Direction::LEFT:
+            return "LEFT";
+    }   
+}
+
+void Bolide::setState(State stat)
+{
+    state = stat;
 }
 
 float Bolide::getFuelCondition() const

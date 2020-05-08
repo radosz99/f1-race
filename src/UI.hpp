@@ -25,8 +25,6 @@ private:
     void endVisualisation();
     void destroyWindow(WINDOW* window);
     WINDOW *create_newwin(int height, int width, int starty, int startx);
-    bool race_cont;
-    WINDOW* raceWindow;
     WINDOW *bolide1, *bolide2, *bolide3, *bolide4, *bolide5, *bolide6;
     WINDOW *internal_win, *external_win, *pitstop_win, *pit1, *pit2, *pit3;
 };

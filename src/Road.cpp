@@ -1,5 +1,5 @@
 #include "Road.hpp"
-
+#include "Direction.hpp"
 Road::Road()
 {
 
@@ -20,7 +20,7 @@ void Road::setCoords(int index, std::pair<int, int>  coord)
     coords[index] = coord;
 }
 
-bool Road::checkIfPositionOccupied(int x, int y, char direction, int index)
+bool Road::checkIfPositionOccupied(int x, int y, Direction direction, int index)
 {
     checkMutex.lock();
     for(int i = 0; i < 6; i++)
@@ -32,7 +32,7 @@ bool Road::checkIfPositionOccupied(int x, int y, char direction, int index)
         int first = coords[i].first;
         int second = coords[i].second;
 
-        if(direction=='u')
+        if(direction == Direction::UP)
         {
             if(x - 4 < first && x > first && y < second + 7 && y >= second)
             {
@@ -40,7 +40,7 @@ bool Road::checkIfPositionOccupied(int x, int y, char direction, int index)
                 return true;
             }
         }
-        if(direction=='d')
+        if(direction == Direction::DOWN)
         {
             if(x + 4 > first && x < first && y < second + 7 && y >= second)
             {
@@ -48,7 +48,7 @@ bool Road::checkIfPositionOccupied(int x, int y, char direction, int index)
                 return true;
             }
         }
-        if(direction=='r')
+        if(direction == Direction::RIGHT)
         {
             if(y + 7 > second && y < second && x < first + 4 && x >= first)
             {
@@ -57,7 +57,7 @@ bool Road::checkIfPositionOccupied(int x, int y, char direction, int index)
             }
             
         }
-        if(direction=='l')
+        if(direction == Direction::LEFT)
         {           
             if(y - 7 < second && y > second && x < first + 4 && x >= first)
             {
@@ -69,4 +69,14 @@ bool Road::checkIfPositionOccupied(int x, int y, char direction, int index)
     }
     checkMutex.unlock();
     return false;
+}
+
+void Road::setRaceCont(bool cont)
+{
+    race_cont = cont;
+}
+
+bool Road::getRaceCont() const
+{
+    return race_cont;
 }
