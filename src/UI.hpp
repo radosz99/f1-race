@@ -8,12 +8,15 @@
 class UI
 {
 public:
-    UI(const std::array<Bolide, 6>&bolides);
+    UI(const std::array<Bolide, 6>&bolides, Road &road);
     ~UI();
     std::mutex change_mutex;
     const std::array<Bolide, 6>& bolides;
+    Road &road;
 
 private:
+    int bolideHeight = 4;
+    int bolideWidth = 7;
     std::unique_ptr<std::thread> refreshThread;
     std::unique_ptr<std::thread> keyboardThread;
     void refreshView();
@@ -25,5 +28,5 @@ private:
     bool race_cont;
     WINDOW* raceWindow;
     WINDOW *bolide1, *bolide2, *bolide3, *bolide4, *bolide5, *bolide6;
-    WINDOW *internal_win, *external_win, *down_road, *up_road, *pit1, *pit2, *pit3;
+    WINDOW *internal_win, *external_win, *pitstop_win, *pit1, *pit2, *pit3;
 };

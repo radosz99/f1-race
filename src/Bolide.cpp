@@ -1,9 +1,10 @@
 #include "Bolide.hpp"
 #include "Random.hpp"
 
-Bolide::Bolide(int x, int y, char dir, std::string name): x(x), y(y), direction(dir), name(name), thread(&Bolide::run, this)
+Bolide::Bolide(int x, int y, char dir, int id, Road &road): x(x), y(y), direction(dir), id(id), road(road),thread(&Bolide::run, this)
 {
     fuelCondition = 1.0f;
+    distance = 0;
 }
 
 Bolide::~Bolide()
@@ -15,28 +16,43 @@ void Bolide::run()
 {
     while(true)
     {
-        fuelCondition*=0.99;
-        int delay = Random().randomInt(15, 100);
+        fuelCondition = fuelCondition * 0.99;
+        int delay = Random().randomInt(60, 150);
+        if(direction =='d' or direction == 'u')
+        {
+            delay*=2;
+        }
         if(direction == 'r')
         {
-            
-            y++;
-            if(y==105)
+            int help_y = y + 1;
+            if(!road.checkIfPositionOccupied(x, help_y, 'r', id))
+            {
+                y++;
+            }
+            if(y==109)
             {
                 direction = 'u';
             }
         }
         if(direction == 'u')
         {
-            x--;
-            if(x==4)
+            int help_x = x - 1;
+            if(!road.checkIfPositionOccupied(help_x, y, 'u', id))
+            {
+                x--;
+            }
+            if(x==3)
             {
                 direction = 'l';
             }
         }
         if(direction == 'l')
         {
-            y--;
+            int help_y = y - 1;
+            if(!road.checkIfPositionOccupied(x, help_y, 'l', id))
+            {
+                y--;
+            }
             if(y==14)
             {
                 direction = 'd';
@@ -44,12 +60,17 @@ void Bolide::run()
         }
         if(direction == 'd')
         {
-            x++;
-            if(x==34)
+            int help_x = x + 1;
+            if(!road.checkIfPositionOccupied(help_x, y, 'd', id))
+            {
+                x++;
+            }
+            if(x==29)
             {
                 direction = 'r';
             }
         }
+        road.setCoords(id, std::make_pair(x,y));
 
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     }
@@ -80,12 +101,30 @@ float Bolide::getFuelCondition() const
     return fuelCondition;
 }
 
-std::string Bolide::getName() const
+int Bolide::getId() const
 {
-    return name;
+    return id;
 }
 
 void Bolide::setFuelCondition(float cond)
 {
     fuelCondition = cond;
 }
+
+std::string Bolide::getStateString() const
+{
+    switch (state)
+    {
+        case State::DRIVING:
+            return "DRIVING";
+        case State::DRIVING_NEED_TO_PIT_STOP:
+            return "DRIVING_NEED_TO_PIT_STOP";
+        case State::WAITING_FOR_PIT_STOP:
+            return "WAITING_FOR_PIT_STOP";
+        case State::PIT_STOP:
+            return "PIT_STOP";
+        case State::AFTER_PIT_STOP:
+            return "AFTER_PIT_STOP";
+    }
+}
+

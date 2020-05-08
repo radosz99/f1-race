@@ -1,14 +1,17 @@
 #include "UI.hpp"
 
-UI::UI(const std::array<Bolide,6>& bolides):bolides(bolides)
+UI::UI(const std::array<Bolide,6>& bolides, Road &road):bolides(bolides), road(road)
 {
-	int ch=10;
-
 	initscr();
 	cbreak();
 	keypad(stdscr, TRUE);
     initializeWindow();
-
+    start_color();
+    init_color(COLOR_MAGENTA, 500,300,900);
+    init_color(COLOR_RED, 1000,440,0);
+    init_pair(1,COLOR_BLUE, COLOR_BLACK);
+    wbkgd(stdscr, COLOR_PAIR(1));
+    wrefresh(stdscr);
     refreshThread = std::make_unique<std::thread>(&UI::refreshView, this);
     keyboardThread = std::make_unique<std::thread>(&UI::endVisualisation, this);   
 }
@@ -28,33 +31,58 @@ void UI::destroyWindow(WINDOW* window)
 
 void UI::initializeWindow()
 {
+
     race_cont = true;
-    int startx, starty, width, height;
-	height = 4;
-	width = 7;
-	starty = (LINES - height) / 2;
-	startx = (COLS - width) / 2;
 	printw("Press ESC to exit");
     const std::string centerHeader = "F1 Race";
     const std::string rightHeader = "Radoslaw Lis SO2 2019/2020";
-    const std::string pitstop1 = "Pit stop 1";
-    const std::string pitstop2 = "Pit stop 2";
-    const std::string pitstop3 = "Pit stop 3";
-    const std::string blank = " ";
     const std::string a = "A";
     mvprintw(0, COLS - centerHeader.length(), centerHeader.c_str());
     mvprintw(LINES-1, COLS - rightHeader.length(), rightHeader.c_str());
 	refresh();
+    move(50, 0);
+}
+
+void UI::refreshView()
+{
+    const std::string pitstop1 = "Pit stop 1";
+    const std::string pitstop2 = "Pit stop 2";
+    const std::string pitstop3 = "Pit stop 3";
+    const std::string blank = " ";
     external_win = create_newwin(40, 129, 2, 12);
-    internal_win = create_newwin(20, 70, 12, 30 );
-    //up_road = create_newwin(38, 24, 3, 117);
-    down_road = create_newwin(28, 12, 8, 117);
-    pit1 = create_newwin(6, 15, 9, 140);
+    internal_win = create_newwin(21, 86, 7, 22 );
+    pitstop_win = create_newwin(28, 12, 8, 117);
+    pit3 = create_newwin(6, 15, 9, 140);
     pit2 = create_newwin(6, 15, 19, 140);
-    pit3 = create_newwin(6, 15, 29, 140);
-    mvprintw(8, 143, pitstop1.c_str());
+    pit1 = create_newwin(6, 15, 29, 140);
+    init_pair(8,COLOR_WHITE, COLOR_BLACK);
+    wattron(external_win,COLOR_PAIR(8));
+    box(external_win,0,0);
+    wrefresh (external_win);
+    wattroff(external_win,COLOR_PAIR(8));
+    wattron(internal_win,COLOR_PAIR(8));
+    box(internal_win,0,0);
+    wrefresh (internal_win);
+    wattroff(internal_win,COLOR_PAIR(8));
+    wattron(pitstop_win,COLOR_PAIR(8));
+    box(pitstop_win,0,0);
+    wrefresh (pitstop_win);
+    wattroff(pitstop_win,COLOR_PAIR(8));
+    wattron(pit3,COLOR_PAIR(8));
+    box(pit3,0,0);
+    wrefresh (pit3);
+    wattroff(pit3,COLOR_PAIR(8));
+    wattron(pit2,COLOR_PAIR(8));
+    box(pit2,0,0);
+    wrefresh (pit2);
+    wattroff(pit2,COLOR_PAIR(8));
+    wattron(pit1,COLOR_PAIR(8));
+    box(pit1,0,0);
+    wrefresh (pit1);
+    wattroff(pit1,COLOR_PAIR(8));
+    mvprintw(8, 143, pitstop3.c_str());
     mvprintw(18, 143, pitstop2.c_str());
-    mvprintw(28, 143, pitstop3.c_str());
+    mvprintw(28, 143, pitstop1.c_str());
     mvprintw(40, 117, blank.c_str());
     mvprintw(39, 117, blank.c_str());
     mvprintw(38, 117, blank.c_str());
@@ -83,28 +111,57 @@ void UI::initializeWindow()
     mvprintw(34, 140, blank.c_str());
     mvprintw(29, 140, blank.c_str());
     mvprintw(30, 140, blank.c_str());
-    move(50, 0);
-}
-
-void UI::refreshView()
-{
     while(race_cont==true)
     {
+
+        init_color(COLOR_BLUE, 50,600,1000);
         destroyWindow(bolide1);
         destroyWindow(bolide2);
         destroyWindow(bolide3);
         destroyWindow(bolide4);
         destroyWindow(bolide5);
         destroyWindow(bolide6);
-	    bolide1 = create_newwin(4, 7, bolides[0].getX(),bolides[0].getY());
-        bolide2 = create_newwin(4, 7, bolides[1].getX(),bolides[1].getY());
-        bolide3 = create_newwin(4, 7, bolides[2].getX(),bolides[2].getY());
-        bolide4 = create_newwin(4, 7, bolides[3].getX(),bolides[3].getY());
-        bolide5 = create_newwin(4, 7, bolides[4].getX(),bolides[4].getY());
-        bolide6 = create_newwin(4, 7, bolides[5].getX(),bolides[5].getY());
+	    bolide1 = create_newwin(bolideHeight, bolideWidth, road.getCoords(0).first,road.getCoords(0).second);
+        bolide2 = create_newwin(bolideHeight, bolideWidth, road.getCoords(1).first,road.getCoords(1).second);
+        bolide3 = create_newwin(bolideHeight, bolideWidth, road.getCoords(2).first,road.getCoords(2).second);
+        bolide4 = create_newwin(bolideHeight, bolideWidth, road.getCoords(3).first,road.getCoords(3).second);
+        bolide5 = create_newwin(bolideHeight, bolideWidth, road.getCoords(4).first,road.getCoords(4).second);
+        bolide6 = create_newwin(bolideHeight, bolideWidth, road.getCoords(5).first,road.getCoords(5).second);
+
+        init_pair(2, COLOR_RED, COLOR_BLACK);
+        wattron(bolide1,COLOR_PAIR(2));
+        box(bolide1,0,0);
+        wrefresh (bolide1);
+        wattroff(bolide1,COLOR_PAIR(2));
+        init_pair(3, COLOR_CYAN, COLOR_BLACK);
+        wattron(bolide2,COLOR_PAIR(3));
+        box(bolide2,0,0);
+        wrefresh (bolide2);
+        wattroff(bolide2,COLOR_PAIR(3));
+        init_pair(4, COLOR_GREEN, COLOR_BLACK);
+        wattron(bolide3,COLOR_PAIR(4));
+        box(bolide3,0,0);
+        wrefresh (bolide3);
+        wattroff(bolide3,COLOR_PAIR(4));
+        init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+        wattron(bolide4,COLOR_PAIR(5));
+        box(bolide4,0,0);
+        wrefresh (bolide4);
+        wattroff(bolide4,COLOR_PAIR(5));
+        init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+        wattron(bolide5,COLOR_PAIR(6));
+        box(bolide5,0,0);
+        wrefresh (bolide5);
+        wattroff(bolide5,COLOR_PAIR(6));
+        init_pair(7, COLOR_BLUE, COLOR_BLACK);
+        wattron(bolide6,COLOR_PAIR(7));
+        box(bolide6,0,0);
+        wrefresh (bolide6);
+        wattroff(bolide6,COLOR_PAIR(7));
+
         refresh();
         update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        std::this_thread::sleep_for(std::chrono::milliseconds(280));
     }
 }
 
@@ -113,8 +170,11 @@ void UI::update()
     std::string info="";
     for(size_t i=0; i<bolides.size(); i++)
     {
-        info = bolides[i].getName() + " ma jeszcze paliwa " + std::to_string(bolides[i].getFuelCondition());
+        attron(COLOR_PAIR(i+2));
+        info = std::to_string(bolides[i].getId()) + " ma jeszcze paliwa " + std::to_string(bolides[i].getFuelCondition()) + 
+        " a koordynaty " + std::to_string(road.getCoords(i).first) + " i " + std::to_string(road.getCoords(i).second) + "  " + bolides[i].getStateString();
         mvprintw(45+i, 3, info.c_str());
+        attroff(COLOR_PAIR(i+2));
     }
 }
 

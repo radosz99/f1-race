@@ -7,7 +7,7 @@
 int main(){
 
 	TrackManager trackManager;
-    UI ui(trackManager.getBolides());
+    UI ui(trackManager.getBolides(), trackManager.getRoad());
 
 	return 0;
 }
