@@ -137,14 +137,13 @@ void UI::refreshView()
 
     while(road.getRaceCont())
     {
-
         init_color(COLOR_BLUE, 50,600,1000);
-	    bolide1 = create_newwin(bolideHeight, bolideWidth, road.getCoords(0).first,road.getCoords(0).second);
-        bolide2 = create_newwin(bolideHeight, bolideWidth, road.getCoords(1).first,road.getCoords(1).second);
-        bolide3 = create_newwin(bolideHeight, bolideWidth, road.getCoords(2).first,road.getCoords(2).second);
-        bolide4 = create_newwin(bolideHeight, bolideWidth, road.getCoords(3).first,road.getCoords(3).second);
-        bolide5 = create_newwin(bolideHeight, bolideWidth, road.getCoords(4).first,road.getCoords(4).second);
-        bolide6 = create_newwin(bolideHeight, bolideWidth, road.getCoords(5).first,road.getCoords(5).second);
+	    bolide1 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(0).first,road.getCoords(0).second);
+        bolide2 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(1).first,road.getCoords(1).second);
+        bolide3 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(2).first,road.getCoords(2).second);
+        bolide4 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(3).first,road.getCoords(3).second);
+        bolide5 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(4).first,road.getCoords(4).second);
+        bolide6 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(5).first,road.getCoords(5).second);
 
         init_pair(2, COLOR_RED, COLOR_BLACK);
         wattron(bolide1,COLOR_PAIR(2));

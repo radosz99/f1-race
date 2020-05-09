@@ -66,11 +66,11 @@ void Bolide::run()
                 x = help_x;
             }
             
-            if(y==109 && state == State::DRIVING)
+            if(y >= 109 && state == State::DRIVING)
             {
                 direction = Direction::UP;
             }
-            else if (state == State::DRIVING_NEED_TO_PIT_STOP && y == 130)
+            else if (state == State::DRIVING_NEED_TO_PIT_STOP && y >= 131)
             {
                 setState(State::WAITING_FOR_PIT_STOP);
                 direction = Direction::UP;
@@ -83,7 +83,7 @@ void Bolide::run()
             {
                 x--;
             }
-            if(x==3)
+            if(x == 3)
             {
                 direction = Direction::LEFT;
             }
