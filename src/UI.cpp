@@ -52,7 +52,7 @@ void UI::refreshView()
     const std::string blank = " ";
     external_win = create_newwin(43, 139, 1, 2);
     internal_win = create_newwin(23, 96, 11, 12 );
-    pitstop_win = create_newwin(31, 12, 8, 117);
+    pitstop_win = create_newwin(33, 12, 6, 117);
     pit3 = create_newwin(6, 15, 9, 140);
     pit2 = create_newwin(6, 15, 19, 140);
     pit1 = create_newwin(6, 15, 29, 140);
@@ -159,6 +159,7 @@ void UI::refreshView()
 void UI::update()
 {
     std::string info = "";
+    std::string pitstopInfo = "";
     for(size_t i = 0; i < bolides.size(); i++)
     {
         attron(COLOR_PAIR(i+2));
@@ -173,8 +174,9 @@ void UI::update()
 
     for(size_t i = 0; i < pitstopes.size(); i++)
     {
+        pitstopInfo = pitstopes[i].getStateString() + "                  ";
         attron(COLOR_PAIR(2));
-        mvprintw(11 + i*10, 160, pitstopes[i].getStateString().c_str());
+        mvprintw(32 - i*10, 156, pitstopInfo.c_str());
         attroff(COLOR_PAIR(2));
     }
 }

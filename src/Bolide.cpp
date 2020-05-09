@@ -2,8 +2,9 @@
 #include "Random.hpp"
 #include "Direction.hpp"
 #include "Pitstop.hpp"
+#include "PitstopState.hpp"
 
-Bolide::Bolide(int id, Road &road, const std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
+Bolide::Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
 {
     fuelCondition = 1.0f;
     distance = 0;
@@ -17,22 +18,53 @@ Bolide::~Bolide()
 void Bolide::run()
 {
     int counter = 0;
+    int pitstopCounter = 0;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     while(!road.getRaceCont());
     while(road.getRaceCont())
     {
         fuelCondition = fuelCondition * 0.995;
         int delay = Random().randomInt(15 * (6-id), 100);
+        
         if(direction == Direction::DOWN || direction == Direction::UP || direction == Direction::UP_PIT_STOP)
         {
             delay *= road.COORDS_DIFFERENCE;
         }
+
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        if(state == State::PIT_STOP)
+        {
+            pitstopCounter++;
+            if(pitstopCounter < 50)
+            {
+                continue;
+            }
+            pitstopCounter = 0;
+            pitstopes[pitstopId].setStatus(PitstopState::FREE);
+            state = State::AFTER_PIT_STOP;
+            direction = Direction::LEFT_PIT_STOP;
+
+        }
         std::scoped_lock lock(mtx);
+
         int x = road.getCoords(id).first;
         int y = road.getCoords(id).second;
         std::pair<int,int> newCoords;
         triesCounter++;
+
+        if(state == State::WAITING_FOR_PIT_STOP)
+        {
+            for(size_t i = 0; i < pitstopes.size(); i++)
+            {
+                if(pitstopes[i].getStatus() == PitstopState::FREE)
+                {
+                    pitstopId = i;
+                    pitstopes[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLID);
+                    state = State::DRIVING_TO_PIT_STOP;
+                    break;
+                }
+            }
+        }
 
         //TODO: bug when cant change path (DOWN_UPTRACK -> DOWN_DOWNTRACK), should wait or go UP
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER)
@@ -80,6 +112,16 @@ void Bolide::run()
             newCoords = downMode(x, y);
         }
 
+        if(direction == Direction::RIGHT_PIT_STOP)
+        {
+            newCoords = rightPSMode(x, y);
+        }
+
+        if(direction == Direction::LEFT_PIT_STOP)
+        {
+            newCoords = leftPSMode(x, y);
+        }
+
         road.setCoords(id, newCoords);
     }
 }
@@ -100,12 +142,8 @@ std::pair<int,int> Bolide::downMode(int x, int y)
 
 std::pair<int,int> Bolide::leftMode(int x, int y)
 {
-    if(state == State::WAITING_FOR_PIT_STOP)
-    {
-        state = State::DRIVING;
-        fillFuelTank();
-    }
     int help_y = y - 1;
+
     if(!road.checkIfPositionOccupied(x, help_y, id))
     {
         y--;
@@ -121,6 +159,24 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
     }
     return std::make_pair(x, y);
 }
+
+std::pair<int,int> Bolide::leftPSMode(int x, int y)
+{
+    int help_y = y - 1;
+
+    if(!road.checkIfPositionOccupied(x, help_y, id))
+    {
+        y--;
+    }
+    
+    if(y < road.PIT_STOP_BORDER_RIGHT)
+    {
+        fillFuelTank();
+        direction = Direction::UP_PIT_STOP;
+    }
+    return std::make_pair(x, y);
+}
+
 
 std::pair<int,int> Bolide::upMode(int x, int y)
 {
@@ -141,14 +197,24 @@ std::pair<int,int> Bolide::upMode(int x, int y)
 std::pair<int,int> Bolide::upPSMode(int x, int y)
 {
     int help_x = x - 1;
+    if(pitstopId < 0 && state != State::AFTER_PIT_STOP)
+    {
+        return std::make_pair(x, y);
+    }
     if(!road.checkIfPositionOccupied(help_x, y, id))
     {
         x--;
     }
     if(x < road.UP_UPTRACK_COORD_X)
     {
-        //direction = Direction::LEFT_DOWN;
+        state = State::DRIVING;
         direction = Direction::LEFT;
+        return std::make_pair(x, y);
+    }
+
+    if(x < 30 - 10 * pitstopId && state != State::AFTER_PIT_STOP)
+    {
+        direction = Direction::RIGHT_PIT_STOP;
     }
     return std::make_pair(x, y);
 }
@@ -181,6 +247,27 @@ std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
     }
     return std::make_pair(x, y);
 }
+
+std::pair<int,int> Bolide::rightPSMode(int x, int y)
+{
+    int help_y = y + 1;
+
+    if(!road.checkIfPositionOccupied(x, help_y, id))
+    {
+        y = help_y;
+    }
+            
+    if(y > 144) // if right limit reached
+    {
+        direction = Direction::LEFT;
+        state = State::PIT_STOP;
+        pitstopes[pitstopId].setStatus(PitstopState::BUSY);
+        
+    }
+    return std::make_pair(x, y);
+}
+
+
 std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
 {
     int help_y = y + 1;
@@ -241,6 +328,10 @@ std::string Bolide::getDirectionString() const
             return "LEFT";
         case Direction::UP_PIT_STOP:
             return "UP_PIT_STOP";
+        case Direction::RIGHT_PIT_STOP:
+            return "RIGHT_PIT_STOP";
+        case Direction::LEFT_PIT_STOP:
+            return "LEFT_PIT_STOP";
     }   
 }
 
@@ -278,6 +369,8 @@ std::string Bolide::getStateString() const
             return "PIT_STOP";
         case State::AFTER_PIT_STOP:
             return "AFTER_PIT_STOP";
+        case State::DRIVING_TO_PIT_STOP:
+            return "DRIVING_TO_PIT_STOP";
     }
 }
 

@@ -13,7 +13,7 @@ public:
     std::string getStateString() const;
 
 private:
-    std::atomic<PitstopState> status = PitstopState::FREE;
+    PitstopState status = PitstopState::FREE;
     std::mutex mtx;
     const int id;
 

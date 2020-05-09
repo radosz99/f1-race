@@ -12,7 +12,7 @@
 class Bolide
 {
 public:
-    Bolide(int id, Road &road, const std::array<Pitstop, 3>& pitstopes);
+    Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes);
     ~Bolide();
     void run();
     std::string getStateString() const;
@@ -30,7 +30,8 @@ public:
 
 
 private:
-    const std::array<Pitstop, 3>& pitstopes;
+    std::array<Pitstop, 3>& pitstopes;
+    int pitstopId = -1;
     int id;
     int failureCounter = 0;
     int triesCounter = 0;
@@ -45,6 +46,8 @@ private:
     std::pair<int,int> leftDownMode(int x, int y, int &counter);
     std::pair<int,int> upMode(int x, int y);
     std::pair<int,int> upPSMode(int x, int y);
+    std::pair<int,int> rightPSMode(int x, int y);
+    std::pair<int,int> leftPSMode(int x, int y);
     std::pair<int,int> rightMode(int x, int y, int &counter);
     std::pair<int,int> leftMode(int x, int y);
 };

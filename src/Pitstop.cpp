@@ -22,6 +22,7 @@ int Pitstop::getId() const
 
 std::string Pitstop::getStateString() const
 {
+
     switch (status)
     {
         case PitstopState::FREE:
