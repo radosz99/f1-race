@@ -72,13 +72,13 @@ void UI::refreshView()
     const std::string pitstop2 = "Pit stop 2";
     const std::string pitstop3 = "Pit stop 3";
     const std::string blank = " ";
-    external_win = create_newwin(40, 129, 2, 12);
-    internal_win = create_newwin(21, 86, 7, 22 );
+    external_win = create_newwin(43, 139, 1, 2);
+    internal_win = create_newwin(23, 96, 11, 12 );
     pitstop_win = create_newwin(28, 12, 8, 117);
     pit3 = create_newwin(6, 15, 9, 140);
     pit2 = create_newwin(6, 15, 19, 140);
     pit1 = create_newwin(6, 15, 29, 140);
-    init_pair(8,COLOR_WHITE, COLOR_BLACK);
+    init_pair(8, COLOR_WHITE, COLOR_BLACK);
     wattron(external_win,COLOR_PAIR(8));
     box(external_win,0,0);
     wrefresh (external_win);

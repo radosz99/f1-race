@@ -21,7 +21,11 @@ void Bolide::run()
     while(road.getRaceCont())
     {
         fuelCondition = fuelCondition * 0.995;
-        int delay = Random().randomInt(10 * (6-id), 80);
+        int delay = Random().randomInt(15 * (6-id), 100);
+        if(direction == Direction::DOWN || direction == Direction::UP || direction == Direction::UP_PIT_STOP)
+        {
+            delay *= road.COORDS_DIFFERENCE;
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         std::scoped_lock lock(mtx);
         int x = road.getCoords(id).first;
@@ -30,7 +34,7 @@ void Bolide::run()
 
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER)
         {
-            setState(State::DRIVING_NEED_TO_PIT_STOP);
+            state = State::DRIVING_NEED_TO_PIT_STOP;
         }
 
         if(state == State::DRIVING_NEED_TO_PIT_STOP && direction == Direction::RIGHT)
@@ -38,11 +42,10 @@ void Bolide::run()
             direction = Direction::RIGHT_DOWN;
         }
 
-        if(direction == Direction::DOWN or direction == Direction::UP)
+        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPTRACK_COORD_X)
         {
-            delay *= road.COORDS_DIFFERENCE;
+            direction = Direction::LEFT_DOWN;
         }
-
 
         if(direction == Direction::RIGHT || direction == Direction::RIGHT_DOWN)
         {
@@ -53,9 +56,20 @@ void Bolide::run()
         {
             newCoords = upMode(x, y);
         }
+
+        if(direction == Direction::UP_PIT_STOP)
+        {
+            newCoords = upPSMode(x, y);
+        }
+
         if(direction == Direction::LEFT)
         {
             newCoords = leftMode(x, y);
+        }
+
+        if(direction == Direction::LEFT_DOWN)
+        {
+            newCoords = leftDownMode(x, y, counter);
         }
 
         if(direction == Direction::DOWN)
@@ -85,7 +99,7 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
 {
     if(state == State::WAITING_FOR_PIT_STOP)
     {
-        setState(State::DRIVING);
+        state = State::DRIVING;
         fillFuelTank();
     }
     int help_y = y - 1;
@@ -114,6 +128,47 @@ std::pair<int,int> Bolide::upMode(int x, int y)
     return std::make_pair(x, y);
 }
 
+std::pair<int,int> Bolide::upPSMode(int x, int y)
+{
+    int help_x = x - 1;
+    if(!road.checkIfPositionOccupied(help_x, y, id))
+    {
+        x--;
+    }
+    if(x < road.UP_UPTRACK_COORD_X)
+    {
+        //direction = Direction::LEFT_DOWN;
+        direction = Direction::LEFT;
+    }
+    return std::make_pair(x, y);
+}
+
+std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
+{
+    int help_y = y - 1;
+    int help_x = x;
+    counter++;
+    if(x < road.UP_DOWNTRACK_COORD_X) // if still changing path
+    {
+        help_x = help_x + 1;
+        counter = 0;
+    }
+    else // if path-change is done
+    {
+        direction = Direction::LEFT;
+    }
+
+    if(!road.checkIfPositionOccupied(help_x, help_y, id))
+    {
+        y--;
+        x = help_x;
+    }
+    if(y < road.BORDER_LEFT)
+    {
+        direction = Direction::DOWN;
+    }
+    return std::make_pair(x, y);
+}
 std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
 {
     int help_y = y + 1;
@@ -122,9 +177,9 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
     if(direction == Direction::RIGHT_DOWN)
     {
         counter++;
-        if(x < road.DOWNTRACK_COORD_X && counter > road.COORDS_DIFFERENCE) // if still changing path
+        if(x < road.DOWN_DOWNTRACK_COORD_X && counter > road.COORDS_DIFFERENCE) // if still changing path
         {
-            help_x++;
+            help_x = help_x + 1;
             counter = 0;
         }
         else // if path-change is done
@@ -132,7 +187,7 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
             direction = Direction::RIGHT;
         }
     }
-    if(!road.checkIfPositionOccupied(x, help_y, id))
+    if(!road.checkIfPositionOccupied(help_x, help_y, id))
     {
         y = help_y;
         x = help_x;
@@ -145,8 +200,8 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
 
     else if (state == State::DRIVING_NEED_TO_PIT_STOP && y >= road.PIT_STOP_BORDER_RIGHT)
     {
-        setState(State::WAITING_FOR_PIT_STOP);
-        direction = Direction::UP;
+        state = State::WAITING_FOR_PIT_STOP;
+        direction = Direction::UP_PIT_STOP;
     }
     return std::make_pair(x, y);
 }
@@ -164,12 +219,16 @@ std::string Bolide::getDirectionString() const
             return "DOWN";
         case Direction::RIGHT_DOWN:
             return "RIGHT_DOWN";
+        case Direction::LEFT_DOWN:
+            return "LEFT_DOWN";
         case Direction::RIGHT:
             return "RIGHT";
         case Direction::UP:
             return "UP";
         case Direction::LEFT:
             return "LEFT";
+        case Direction::UP_PIT_STOP:
+            return "UP_PIT_STOP";
     }   
 }
 

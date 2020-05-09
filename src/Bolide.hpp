@@ -35,7 +35,9 @@ private:
     std::atomic<State> state = State::DRIVING;
     std::atomic<Direction> direction = Direction::RIGHT;
     std::pair<int,int> downMode(int x, int y);
+    std::pair<int,int> leftDownMode(int x, int y, int &counter);
     std::pair<int,int> upMode(int x, int y);
+    std::pair<int,int> upPSMode(int x, int y);
     std::pair<int,int> rightMode(int x, int y, int &counter);
     std::pair<int,int> leftMode(int x, int y);
 };
