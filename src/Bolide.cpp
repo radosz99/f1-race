@@ -22,11 +22,13 @@ void Bolide::run()
     {
         fuelCondition = fuelCondition * 0.995;
         int delay = Random().randomInt(10 * (6-id), 80);
-        mtx.lock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        std::scoped_lock lock(mtx);
         int x = road.getCoords(id).first;
         int y = road.getCoords(id).second;
+        std::pair<int,int> newCoords;
 
-        if(fuelCondition < 0.2 && state == State::DRIVING && y < 85)
+        if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER)
         {
             setState(State::DRIVING_NEED_TO_PIT_STOP);
         }
@@ -38,89 +40,115 @@ void Bolide::run()
 
         if(direction == Direction::DOWN or direction == Direction::UP)
         {
-            delay *= 2;
+            delay *= road.COORDS_DIFFERENCE;
         }
 
 
         if(direction == Direction::RIGHT || direction == Direction::RIGHT_DOWN)
         {
-            int help_y = y + 1;
-            int help_x = x;
-            if(direction == Direction::RIGHT_DOWN)
-            {
-                counter++;
-                if(x < 36 && counter > 3)
-                {
-                    help_x = help_x + 1;
-                    counter = 0;
-                }
-                else
-                {
-                    direction = Direction::RIGHT;
-                }
-                
-            }
-            if(!road.checkIfPositionOccupied(x, help_y, Direction::RIGHT, id))
-            {
-                y = help_y;
-                x = help_x;
-            }
-            
-            if(y >= 109 && state == State::DRIVING)
-            {
-                direction = Direction::UP;
-            }
-            else if (state == State::DRIVING_NEED_TO_PIT_STOP && y >= 131)
-            {
-                setState(State::WAITING_FOR_PIT_STOP);
-                direction = Direction::UP;
-            }
+           newCoords = rightMode(x, y, counter);
         }
+
         if(direction == Direction::UP)
         {
-            int help_x = x - 1;
-            if(!road.checkIfPositionOccupied(help_x, y, Direction::UP, id))
-            {
-                x--;
-            }
-            if(x == 3)
-            {
-                direction = Direction::LEFT;
-            }
+            newCoords = upMode(x, y);
         }
         if(direction == Direction::LEFT)
         {
-            if(state == State::WAITING_FOR_PIT_STOP)
-            {
-                setState(State::DRIVING);
-                fuelCondition = 1.0f;
-            }
-            int help_y = y - 1;
-            if(!road.checkIfPositionOccupied(x, help_y, Direction::LEFT, id))
-            {
-                y--;
-            }
-            if(y==14)
-            {
-                direction = Direction::DOWN;
-            }
+            newCoords = leftMode(x, y);
         }
+
         if(direction == Direction::DOWN)
         {
-            int help_x = x + 1;
-            if(!road.checkIfPositionOccupied(help_x, y, Direction::DOWN, id))
-            {
-                x++;
-            }
-            if(x==29)
-            {
-                direction = Direction::RIGHT;
-            }
+            newCoords = downMode(x, y);
         }
-        road.setCoords(id, std::make_pair(x,y));
-        mtx.unlock();
-        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
+        road.setCoords(id, newCoords);
     }
+}
+
+std::pair<int,int> Bolide::downMode(int x, int y)
+{
+    int help_x = x + 1;
+    if(!road.checkIfPositionOccupied(help_x, y, id))
+    {
+        x++;
+    }
+    if(x > road.BORDER_DOWN)
+    {
+        direction = Direction::RIGHT;
+    }
+    return std::make_pair(x, y);
+}
+
+std::pair<int,int> Bolide::leftMode(int x, int y)
+{
+    if(state == State::WAITING_FOR_PIT_STOP)
+    {
+        setState(State::DRIVING);
+        fillFuelTank();
+    }
+    int help_y = y - 1;
+    if(!road.checkIfPositionOccupied(x, help_y, id))
+    {
+        y--;
+    }
+    if(y < road.BORDER_LEFT)
+    {
+        direction = Direction::DOWN;
+    }
+    return std::make_pair(x, y);
+}
+
+std::pair<int,int> Bolide::upMode(int x, int y)
+{
+    int help_x = x - 1;
+    if(!road.checkIfPositionOccupied(help_x, y, id))
+    {
+        x--;
+    }
+    if(x < road.BORDER_UP)
+    {
+        direction = Direction::LEFT;
+    }
+    return std::make_pair(x, y);
+}
+
+std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
+{
+    int help_y = y + 1;
+    int help_x = x;
+
+    if(direction == Direction::RIGHT_DOWN)
+    {
+        counter++;
+        if(x < road.DOWNTRACK_COORD_X && counter > road.COORDS_DIFFERENCE) // if still changing path
+        {
+            help_x++;
+            counter = 0;
+        }
+        else // if path-change is done
+        {
+            direction = Direction::RIGHT;
+        }
+    }
+    if(!road.checkIfPositionOccupied(x, help_y, id))
+    {
+        y = help_y;
+        x = help_x;
+    }
+            
+    if(y > road.BORDER_RIGHT && state == State::DRIVING) // if right limit reached
+    {
+        direction = Direction::UP;
+    }
+
+    else if (state == State::DRIVING_NEED_TO_PIT_STOP && y >= road.PIT_STOP_BORDER_RIGHT)
+    {
+        setState(State::WAITING_FOR_PIT_STOP);
+        direction = Direction::UP;
+    }
+    return std::make_pair(x, y);
 }
 
 Direction Bolide::getDirection() const
@@ -182,3 +210,7 @@ std::string Bolide::getStateString() const
     }
 }
 
+void Bolide::fillFuelTank()
+{
+    fuelCondition = 1.0f;
+}

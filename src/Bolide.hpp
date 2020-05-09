@@ -21,7 +21,9 @@ public:
     float getFuelCondition() const;
     void setFuelCondition(float cond);
     void setState(State state);
+    void fillFuelTank();
     Road &road;
+    const float FUEL_RATIO_ALERT = 0.2f;
 
 private:
     int id;
@@ -32,4 +34,8 @@ private:
     std::atomic<float> fuelCondition;
     std::atomic<State> state = State::DRIVING;
     std::atomic<Direction> direction = Direction::RIGHT;
+    std::pair<int,int> downMode(int x, int y);
+    std::pair<int,int> upMode(int x, int y);
+    std::pair<int,int> rightMode(int x, int y, int &counter);
+    std::pair<int,int> leftMode(int x, int y);
 };

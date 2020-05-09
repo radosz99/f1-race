@@ -20,10 +20,10 @@ void Road::setCoords(int index, std::pair<int, int>  coord)
     coords[index] = coord;
 }
 
-bool Road::checkIfPositionOccupied(int x, int y, Direction direction, int index)
+bool Road::checkIfPositionOccupied(int x, int y, int index)
 {
     std::scoped_lock lock(checkMutex);
-    for(int i = 0; i < 6; i++)
+    for(int i = 0; i < *(&coords + 1) - coords; i++)
     {
         if(index == i)
         {
