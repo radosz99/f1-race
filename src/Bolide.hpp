@@ -3,6 +3,7 @@
 #include <random>
 #include <atomic>
 #include <thread>
+#include <mutex>
 #include"Road.hpp"
 #include"State.hpp"
 #include"Direction.hpp"
@@ -26,6 +27,7 @@ private:
     int id;
     std::atomic<float> speed = 0.0f;
     std::thread thread;
+    std::mutex mtx;
     std::atomic<long> distance;
     std::atomic<float> fuelCondition;
     std::atomic<State> state = State::DRIVING;

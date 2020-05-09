@@ -20,12 +20,30 @@ UI::~UI()
 {
     keyboardThread->join();
     refreshThread->join();
-    destroyWindow(bolide1);
-    destroyWindow(bolide2);
-    destroyWindow(bolide3);
-    destroyWindow(bolide4);
-    destroyWindow(bolide5);
-    destroyWindow(bolide6);
+    // destroyWindow(bolide1);
+    // destroyWindow(bolide2);
+    // destroyWindow(bolide3);
+    // destroyWindow(bolide4);
+    // destroyWindow(bolide5);
+    // destroyWindow(bolide6);
+    // delwin(bolide1);
+    // delwin(bolide2);
+    // delwin(bolide3);
+    // delwin(bolide4);
+    // delwin(bolide5);
+    // delwin(bolide6);
+    // destroyWindow(internal_win);
+    // destroyWindow(external_win);
+    // destroyWindow(pitstop_win);
+    // destroyWindow(pit1);
+    // destroyWindow(pit2);
+    // destroyWindow(pit3);
+    // delwin(internal_win);
+    // delwin(external_win);
+    // delwin(pitstop_win);
+    // delwin(pit1);
+    // delwin(pit2);
+    // delwin(pit3);
     endwin();
 
 }
@@ -43,11 +61,9 @@ void UI::initializeWindow()
 	printw("Press ESC to exit");
     const std::string centerHeader = "F1 Race";
     const std::string rightHeader = "Radoslaw Lis SO2 2019/2020";
-    const std::string a = "A";
     mvprintw(0, COLS - centerHeader.length(), centerHeader.c_str());
     mvprintw(LINES-1, COLS - rightHeader.length(), rightHeader.c_str());
 	refresh();
-    move(50, 0);
 }
 
 void UI::refreshView()
@@ -123,12 +139,6 @@ void UI::refreshView()
     {
 
         init_color(COLOR_BLUE, 50,600,1000);
-        destroyWindow(bolide1);
-        destroyWindow(bolide2);
-        destroyWindow(bolide3);
-        destroyWindow(bolide4);
-        destroyWindow(bolide5);
-        destroyWindow(bolide6);
 	    bolide1 = create_newwin(bolideHeight, bolideWidth, road.getCoords(0).first,road.getCoords(0).second);
         bolide2 = create_newwin(bolideHeight, bolideWidth, road.getCoords(1).first,road.getCoords(1).second);
         bolide3 = create_newwin(bolideHeight, bolideWidth, road.getCoords(2).first,road.getCoords(2).second);
@@ -170,6 +180,12 @@ void UI::refreshView()
         refresh();
         update();
         std::this_thread::sleep_for(std::chrono::milliseconds(280));
+        destroyWindow(bolide1);
+        destroyWindow(bolide2);
+        destroyWindow(bolide3);
+        destroyWindow(bolide4);
+        destroyWindow(bolide5);
+        destroyWindow(bolide6);
     }
 }
 

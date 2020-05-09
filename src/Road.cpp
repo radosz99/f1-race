@@ -32,39 +32,44 @@ bool Road::checkIfPositionOccupied(int x, int y, Direction direction, int index)
         int first = coords[i].first;
         int second = coords[i].second;
 
-        if(direction == Direction::UP)
-        {
-            if(x - 4 < first && x > first && y < second + 7 && y >= second)
-            {
-                checkMutex.unlock();
-                return true;
-            }
-        }
-        if(direction == Direction::DOWN)
-        {
-            if(x + 4 > first && x < first && y < second + 7 && y >= second)
-            {
-                checkMutex.unlock();
-                return true;
-            }
-        }
-        if(direction == Direction::RIGHT)
-        {
-            if(y + 7 > second && y < second && x < first + 4 && x >= first)
-            {
-                checkMutex.unlock();
-                return true;
-            }
+        // if(direction == Direction::UP)
+        // {
+        //     if(x - 4 < first && x > first && y < second + 7 && y >= second)
+        //     {
+        //         checkMutex.unlock();
+        //         return true;
+        //     }
+        // }
+        // if(direction == Direction::DOWN)
+        // {
+        //     if(x + 4 > first && x < first && y < second + 7 && y >= second)
+        //     {
+        //         checkMutex.unlock();
+        //         return true;
+        //     }
+        // }
+        // if(direction == Direction::RIGHT)
+        // {
+        //     if(y + 7 > second && y < second && x < first + 4 && x >= first)
+        //     {
+        //         checkMutex.unlock();
+        //         return true;
+        //     }
             
-        }
-        if(direction == Direction::LEFT)
-        {           
-            if(y - 7 < second && y > second && x < first + 4 && x >= first)
-            {
-                checkMutex.unlock();
-                return true;
-            }
+        // }
+        // if(direction == Direction::LEFT)
+        // {           
+        //     if(y - 7 < second && y > second && x < first + 4 && x >= first)
+        //     {
+        //         checkMutex.unlock();
+        //         return true;
+        //     }
 
+        // }
+        if(((first <= x && x <= first + 3) || (first <= x + 3 && x + 3 <= first + 3)) && ((second <= y && y <= second + 6) || (second <= y + 6 && y +6 <= second + 6)))
+        {
+            checkMutex.unlock();
+            return true;
         }
     }
     checkMutex.unlock();
