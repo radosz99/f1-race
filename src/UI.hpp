@@ -4,14 +4,15 @@
 #include <ncurses.h>
 #include <mutex>
 #include "Bolide.hpp"
-
+#include "Pitstop.hpp"
 class UI
 {
 public:
-    UI(const std::array<Bolide, 6>&bolides, Road &road);
+    UI(const std::array<Bolide, 6>&bolides, Road &road, const std::array<Pitstop, 3>&pitstopes);
     ~UI();
     std::mutex change_mutex;
     const std::array<Bolide, 6>& bolides;
+    const std::array<Pitstop, 3>& pitstopes;
     Road &road;
 
 private:

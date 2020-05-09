@@ -1,9 +1,11 @@
 #include "UI.hpp"
 
-UI::UI(const std::array<Bolide,6>& bolides, Road &road):bolides(bolides), road(road)
+UI::UI(const std::array<Bolide,6>& bolides, Road &road, const std::array<Pitstop, 3>&pitstopes): bolides(bolides), road(road), pitstopes(pitstopes)
 {
 	initscr();
 	cbreak();
+    noecho();
+    curs_set(0);
 	keypad(stdscr, TRUE);
     initializeWindow();
     start_color();
@@ -20,30 +22,6 @@ UI::~UI()
 {
     keyboardThread->join();
     refreshThread->join();
-    // destroyWindow(bolide1);
-    // destroyWindow(bolide2);
-    // destroyWindow(bolide3);
-    // destroyWindow(bolide4);
-    // destroyWindow(bolide5);
-    // destroyWindow(bolide6);
-    // delwin(bolide1);
-    // delwin(bolide2);
-    // delwin(bolide3);
-    // delwin(bolide4);
-    // delwin(bolide5);
-    // delwin(bolide6);
-    // destroyWindow(internal_win);
-    // destroyWindow(external_win);
-    // destroyWindow(pitstop_win);
-    // destroyWindow(pit1);
-    // destroyWindow(pit2);
-    // destroyWindow(pit3);
-    // delwin(internal_win);
-    // delwin(external_win);
-    // delwin(pitstop_win);
-    // delwin(pit1);
-    // delwin(pit2);
-    // delwin(pit3);
     endwin();
 
 }
@@ -74,7 +52,7 @@ void UI::refreshView()
     const std::string blank = " ";
     external_win = create_newwin(43, 139, 1, 2);
     internal_win = create_newwin(23, 96, 11, 12 );
-    pitstop_win = create_newwin(28, 12, 8, 117);
+    pitstop_win = create_newwin(31, 12, 8, 117);
     pit3 = create_newwin(6, 15, 9, 140);
     pit2 = create_newwin(6, 15, 19, 140);
     pit1 = create_newwin(6, 15, 29, 140);
@@ -106,16 +84,6 @@ void UI::refreshView()
     mvprintw(8, 143, pitstop3.c_str());
     mvprintw(18, 143, pitstop2.c_str());
     mvprintw(28, 143, pitstop1.c_str());
-    mvprintw(40, 117, blank.c_str());
-    mvprintw(39, 117, blank.c_str());
-    mvprintw(38, 117, blank.c_str());
-    mvprintw(37, 117, blank.c_str());
-    mvprintw(36, 117, blank.c_str());
-    mvprintw(7, 117, blank.c_str());
-    mvprintw(6, 117, blank.c_str());
-    mvprintw(5, 117, blank.c_str());
-    mvprintw(4, 117, blank.c_str());
-    mvprintw(3, 117, blank.c_str());
     mvprintw(11, 140, blank.c_str());
     mvprintw(12, 140, blank.c_str());
     mvprintw(13, 140, blank.c_str());
@@ -190,15 +158,24 @@ void UI::refreshView()
 
 void UI::update()
 {
-    std::string info="";
-    for(size_t i=0; i<bolides.size(); i++)
+    std::string info = "";
+    for(size_t i = 0; i < bolides.size(); i++)
     {
         attron(COLOR_PAIR(i+2));
+
         info = std::to_string(bolides[i].getId()) + " ma jeszcze paliwa " + std::to_string(bolides[i].getFuelCondition()) + 
         " a koordynaty " + std::to_string(road.getCoords(i).first) + " i " + std::to_string(road.getCoords(i).second) + " i " + bolides[i].getStateString() + " i " + 
-        bolides[i].getDirectionString() + "                              ";
+        bolides[i].getDirectionString() + " bledow " + std::to_string(bolides[i].getFailureCounter()) + " prob " + std::to_string(bolides[i].getTriesCounter()) + "                              ";
+
         mvprintw(45+i, 3, info.c_str());
         attroff(COLOR_PAIR(i+2));
+    }
+
+    for(size_t i = 0; i < pitstopes.size(); i++)
+    {
+        attron(COLOR_PAIR(2));
+        mvprintw(11 + i*10, 160, pitstopes[i].getStateString().c_str());
+        attroff(COLOR_PAIR(2));
     }
 }
 

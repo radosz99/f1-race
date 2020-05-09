@@ -1,8 +1,9 @@
 #include "Bolide.hpp"
 #include "Random.hpp"
 #include "Direction.hpp"
+#include "Pitstop.hpp"
 
-Bolide::Bolide(int id, Road &road): id(id), road(road),thread(&Bolide::run, this)
+Bolide::Bolide(int id, Road &road, const std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
 {
     fuelCondition = 1.0f;
     distance = 0;
@@ -31,7 +32,9 @@ void Bolide::run()
         int x = road.getCoords(id).first;
         int y = road.getCoords(id).second;
         std::pair<int,int> newCoords;
+        triesCounter++;
 
+        //TODO: bug when cant change path (DOWN_UPTRACK -> DOWN_DOWNTRACK), should wait or go UP
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER)
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
@@ -107,6 +110,11 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
     {
         y--;
     }
+    else
+    {
+        failureCounter++;
+    }
+    
     if(y < road.BORDER_LEFT)
     {
         direction = Direction::DOWN;
@@ -124,6 +132,8 @@ std::pair<int,int> Bolide::upMode(int x, int y)
     if(x < road.BORDER_UP)
     {
         direction = Direction::LEFT;
+        failureCounter = 0;
+        triesCounter = 0;
     }
     return std::make_pair(x, y);
 }
@@ -156,6 +166,8 @@ std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
     else // if path-change is done
     {
         direction = Direction::LEFT;
+        failureCounter = 0;
+        triesCounter = 0;
     }
 
     if(!road.checkIfPositionOccupied(help_x, help_y, id))
@@ -272,4 +284,13 @@ std::string Bolide::getStateString() const
 void Bolide::fillFuelTank()
 {
     fuelCondition = 1.0f;
+}
+
+int Bolide::getFailureCounter() const
+{
+    return failureCounter;
+}
+int Bolide::getTriesCounter() const
+{
+    return triesCounter;
 }

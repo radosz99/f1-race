@@ -7,11 +7,12 @@
 #include"Road.hpp"
 #include"State.hpp"
 #include"Direction.hpp"
+#include "Pitstop.hpp"
 
 class Bolide
 {
 public:
-    Bolide(int id, Road &road);
+    Bolide(int id, Road &road, const std::array<Pitstop, 3>& pitstopes);
     ~Bolide();
     void run();
     std::string getStateString() const;
@@ -24,9 +25,15 @@ public:
     void fillFuelTank();
     Road &road;
     const float FUEL_RATIO_ALERT = 0.2f;
+    int getFailureCounter() const;
+    int getTriesCounter() const;
+
 
 private:
+    const std::array<Pitstop, 3>& pitstopes;
     int id;
+    int failureCounter = 0;
+    int triesCounter = 0;
     std::atomic<float> speed = 0.0f;
     std::thread thread;
     std::mutex mtx;
