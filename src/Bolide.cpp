@@ -6,7 +6,7 @@
 
 Bolide::Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
 {
-    fuelCondition = 1.0f;
+    fuelCondition = 0.2f;
     distance = 0;
 }
 
@@ -32,6 +32,8 @@ void Bolide::run()
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        //TODO: fix bug with too fast free state in pitstop
+        //TODO: make pitstop manager
         if(state == State::PIT_STOP)
         {
             pitstopCounter++;
@@ -40,7 +42,6 @@ void Bolide::run()
                 continue;
             }
             pitstopCounter = 0;
-            pitstopes[pitstopId].setStatus(PitstopState::FREE);
             state = State::AFTER_PIT_STOP;
             direction = Direction::LEFT_PIT_STOP;
 
@@ -52,7 +53,7 @@ void Bolide::run()
         std::pair<int,int> newCoords;
         triesCounter++;
 
-        if(state == State::WAITING_FOR_PIT_STOP)
+        if(state == State::WAITING_FOR_PIT_STOP) // looking for available pitstop
         {
             for(size_t i = 0; i < pitstopes.size(); i++)
             {
@@ -67,59 +68,50 @@ void Bolide::run()
         }
 
         //TODO: bug when cant change path (DOWN_UPTRACK -> DOWN_DOWNTRACK), should wait or go UP
-        if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER)
+        if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER) // if pitstop is needed and position is right
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
         }
 
-        if(state == State::DRIVING_NEED_TO_PIT_STOP && direction == Direction::RIGHT)
+        if(state == State::DRIVING_NEED_TO_PIT_STOP && direction == Direction::RIGHT) // change track to downtrack to get to the pitstop
         {
             direction = Direction::RIGHT_DOWN;
         }
 
-        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPTRACK_COORD_X)
+        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPTRACK_COORD_X) // change uptrack to downtrack if coords are right
         {
             direction = Direction::LEFT_DOWN;
         }
 
-        if(direction == Direction::RIGHT || direction == Direction::RIGHT_DOWN)
+        switch(direction)
         {
-           newCoords = rightMode(x, y, counter);
-        }
-
-        if(direction == Direction::UP)
-        {
-            newCoords = upMode(x, y);
-        }
-
-        if(direction == Direction::UP_PIT_STOP)
-        {
-            newCoords = upPSMode(x, y);
-        }
-
-        if(direction == Direction::LEFT)
-        {
-            newCoords = leftMode(x, y);
-        }
-
-        if(direction == Direction::LEFT_DOWN)
-        {
-            newCoords = leftDownMode(x, y, counter);
-        }
-
-        if(direction == Direction::DOWN)
-        {
-            newCoords = downMode(x, y);
-        }
-
-        if(direction == Direction::RIGHT_PIT_STOP)
-        {
-            newCoords = rightPSMode(x, y);
-        }
-
-        if(direction == Direction::LEFT_PIT_STOP)
-        {
-            newCoords = leftPSMode(x, y);
+            case Direction::RIGHT:
+                newCoords = rightMode(x, y, counter);
+                break;
+            case Direction::RIGHT_DOWN:
+                newCoords = rightMode(x, y, counter);
+                break;
+            case Direction::UP:
+                newCoords = upMode(x, y);
+                break;
+            case Direction::UP_PIT_STOP:
+                newCoords = upPSMode(x, y);
+                break;
+            case Direction::LEFT:
+                newCoords = leftMode(x, y);
+                break;
+            case Direction::LEFT_DOWN:
+                newCoords = leftDownMode(x, y, counter);
+                break;
+            case Direction::DOWN:
+                newCoords = downMode(x, y);
+                break;
+            case Direction::RIGHT_PIT_STOP:
+                newCoords = rightPSMode(x, y);
+                break;
+            case Direction::LEFT_PIT_STOP:
+                newCoords = leftPSMode(x, y);
+                break;
         }
 
         road.setCoords(id, newCoords);
@@ -153,7 +145,7 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
         failureCounter++;
     }
     
-    if(y < road.BORDER_LEFT)
+    if(y <= road.BORDER_LEFT)
     {
         direction = Direction::DOWN;
     }
@@ -169,9 +161,11 @@ std::pair<int,int> Bolide::leftPSMode(int x, int y)
         y--;
     }
     
-    if(y < road.PIT_STOP_BORDER_RIGHT)
+    if(y <= road.PIT_STOP_BORDER_RIGHT)
     {
         fillFuelTank();
+        pitstopes[pitstopId].setStatus(PitstopState::FREE);
+        pitstopId = -1;
         direction = Direction::UP_PIT_STOP;
     }
     return std::make_pair(x, y);
@@ -185,7 +179,7 @@ std::pair<int,int> Bolide::upMode(int x, int y)
     {
         x--;
     }
-    if(x < road.BORDER_UP)
+    if(x <= road.BORDER_UP)
     {
         direction = Direction::LEFT;
         failureCounter = 0;
@@ -205,14 +199,14 @@ std::pair<int,int> Bolide::upPSMode(int x, int y)
     {
         x--;
     }
-    if(x < road.UP_UPTRACK_COORD_X)
+    if(x <= road.UP_UPTRACK_COORD_X)
     {
         state = State::DRIVING;
         direction = Direction::LEFT;
         return std::make_pair(x, y);
     }
 
-    if(x < 30 - 10 * pitstopId && state != State::AFTER_PIT_STOP)
+    if(x <= road.PIT_STOP_COORD_X - 10 * pitstopId && state != State::AFTER_PIT_STOP)
     {
         direction = Direction::RIGHT_PIT_STOP;
     }
@@ -257,9 +251,9 @@ std::pair<int,int> Bolide::rightPSMode(int x, int y)
         y = help_y;
     }
             
-    if(y > 144) // if right limit reached
+    if(y > road.PIT_STOP_COORD_Y) // if right limit reached
     {
-        direction = Direction::LEFT;
+        //direction = Direction::LEFT;
         state = State::PIT_STOP;
         pitstopes[pitstopId].setStatus(PitstopState::BUSY);
         
@@ -292,7 +286,7 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
         x = help_x;
     }
             
-    if(y > road.BORDER_RIGHT && state == State::DRIVING) // if right limit reached
+    if(y >= road.BORDER_RIGHT && state == State::DRIVING) // if right limit reached
     {
         direction = Direction::UP;
     }

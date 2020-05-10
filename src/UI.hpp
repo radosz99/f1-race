@@ -27,5 +27,5 @@ private:
     void destroyWindow(WINDOW* window);
     WINDOW *create_newwin(int height, int width, int starty, int startx);
     WINDOW *bolide1, *bolide2, *bolide3, *bolide4, *bolide5, *bolide6;
-    WINDOW *internal_win, *external_win, *pitstop_win, *pit1, *pit2, *pit3;
+    WINDOW *internal_win, *external_win, *pitstop_win, *pit1, *pit2, *pit3, *pit_info1, *pit_info2, *pit_info3;
 };

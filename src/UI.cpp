@@ -56,6 +56,9 @@ void UI::refreshView()
     pit3 = create_newwin(6, 15, 9, 140);
     pit2 = create_newwin(6, 15, 19, 140);
     pit1 = create_newwin(6, 15, 29, 140);
+    pit_info1 = create_newwin(15, 40, 36, 160);
+    pit_info2 = create_newwin(15, 40, 19, 160);
+    pit_info3 = create_newwin(15, 40, 2, 160);
     init_pair(8, COLOR_WHITE, COLOR_BLACK);
     wattron(external_win,COLOR_PAIR(8));
     box(external_win,0,0);
@@ -84,6 +87,7 @@ void UI::refreshView()
     mvprintw(8, 143, pitstop3.c_str());
     mvprintw(18, 143, pitstop2.c_str());
     mvprintw(28, 143, pitstop1.c_str());
+
     mvprintw(11, 140, blank.c_str());
     mvprintw(12, 140, blank.c_str());
     mvprintw(13, 140, blank.c_str());
@@ -158,15 +162,25 @@ void UI::refreshView()
 
 void UI::update()
 {
+    
     std::string info = "";
     std::string pitstopInfo = "";
+    std::string newPitstopInfo(38, ' ');
+    const std::string pitstop1 = "Pit stop 1";
+    const std::string pitstop2 = "Pit stop 2";
+    const std::string pitstop3 = "Pit stop 3";
+    mvprintw(3, 180 - pitstop3.size()/2, pitstop3.c_str());
+    mvprintw(20, 180 - pitstop2.size()/2, pitstop2.c_str());
+    mvprintw(37, 180 - pitstop1.size()/2, pitstop1.c_str());
+
     for(size_t i = 0; i < bolides.size(); i++)
     {
         attron(COLOR_PAIR(i+2));
 
-        info = std::to_string(bolides[i].getId()) + " ma jeszcze paliwa " + std::to_string(bolides[i].getFuelCondition()) + 
-        " a koordynaty " + std::to_string(road.getCoords(i).first) + " i " + std::to_string(road.getCoords(i).second) + " i " + bolides[i].getStateString() + " i " + 
-        bolides[i].getDirectionString() + " bledow " + std::to_string(bolides[i].getFailureCounter()) + " prob " + std::to_string(bolides[i].getTriesCounter()) + "                              ";
+        info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getFuelCondition()) + 
+                " | " + std::to_string(road.getCoords(i).first) + ", " + std::to_string(road.getCoords(i).second) + " | " + bolides[i].getStateString() + " | " + 
+                bolides[i].getDirectionString() + " | " + std::to_string(bolides[i].getFailureCounter()) + "/" + std::to_string(bolides[i].getTriesCounter()) 
+                + "                              ";
 
         mvprintw(45+i, 3, info.c_str());
         attroff(COLOR_PAIR(i+2));
@@ -174,9 +188,10 @@ void UI::update()
 
     for(size_t i = 0; i < pitstopes.size(); i++)
     {
-        pitstopInfo = pitstopes[i].getStateString() + "                  ";
+        pitstopInfo = pitstopes[i].getStateString();
+        mvprintw(38 - i*17, 161, newPitstopInfo.c_str()); // clear recent info
         attron(COLOR_PAIR(2));
-        mvprintw(32 - i*10, 156, pitstopInfo.c_str());
+        mvprintw(38 - i*17, 180 - pitstopInfo.size()/2, pitstopInfo.c_str());
         attroff(COLOR_PAIR(2));
     }
 }
