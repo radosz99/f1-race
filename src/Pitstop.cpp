@@ -1,6 +1,7 @@
 #include"Pitstop.hpp"
 #include"PitstopState.hpp"
 
+//TODO: add engineer thread with skill atribute and others needed
 Pitstop::Pitstop(int id) : id(id)
 {
 
@@ -29,7 +30,7 @@ std::string Pitstop::getStateString() const
             return "FREE";
         case PitstopState::BUSY:
             return "BUSY";
-        case PitstopState::WAITING_FOR_BOLID:
-            return "WAITING_FOR_BOLID";
+        case PitstopState::WAITING_FOR_BOLIDE:
+            return "WAITING_FOR_BOLIDE";
     }
 }

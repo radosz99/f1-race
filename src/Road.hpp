@@ -23,22 +23,22 @@ class Road
         const int BORDER_LEFT = 4;
         const int PIT_STOP_BORDER_RIGHT = 131;
         const int COORDS_DIFFERENCE = 2; // less ROWS than COLS
-        const int CHANGING_TRACK_BORDER = 85; // to avoid 'crashes'
-        const int DOWN_DOWNTRACK_COORD_X = 39;
-        const int DOWN_UPTRACK_COORD_X = 34;
-        const int UP_DOWNTRACK_COORD_X = 7;
-        const int UP_UPTRACK_COORD_X = 2;
+        const int CHANGING_PATH_BORDER = 85; // to avoid 'crashes'
+        const int DOWN_DOWNPATH_COORD_X = 39;
+        const int DOWN_UPPATH_COORD_X = 34;
+        const int UP_DOWNPATH_COORD_X = 7;
+        const int UP_UPPATH_COORD_X = 2;
         const int PIT_STOP_COORD_X = 30;
         const int PIT_STOP_COORD_Y = 144;
 
     private:
         std::pair<int, int> coords[6] = {
-            std::make_pair(DOWN_DOWNTRACK_COORD_X, 10), 
-            std::make_pair(DOWN_UPTRACK_COORD_X, 10), 
-            std::make_pair(DOWN_DOWNTRACK_COORD_X, 20), 
-            std::make_pair(DOWN_UPTRACK_COORD_X, 20), 
-            std::make_pair(DOWN_DOWNTRACK_COORD_X, 30), 
-            std::make_pair(DOWN_UPTRACK_COORD_X, 30)
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 10), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 10), 
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 20), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 20), 
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 30), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 30)
             };
         std::atomic<bool> race_cont = true;
 

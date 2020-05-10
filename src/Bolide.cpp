@@ -34,6 +34,7 @@ void Bolide::run()
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
         //TODO: fix bug with too fast free state in pitstop
         //TODO: make pitstop manager
+        //TODO: add overtaking mode in both up and down paths
         if(state == State::PIT_STOP)
         {
             pitstopCounter++;
@@ -60,25 +61,25 @@ void Bolide::run()
                 if(pitstopes[i].getStatus() == PitstopState::FREE)
                 {
                     pitstopId = i;
-                    pitstopes[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLID);
+                    pitstopes[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLIDE);
                     state = State::DRIVING_TO_PIT_STOP;
                     break;
                 }
             }
         }
 
-        //TODO: bug when cant change path (DOWN_UPTRACK -> DOWN_DOWNTRACK), should wait or go UP
-        if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_TRACK_BORDER) // if pitstop is needed and position is right
+        //TODO: bug when cant change path (DOWN_UPPATH -> DOWN_DOWNPATH), should wait or go UP
+        if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_PATH_BORDER) // if pitstop is needed and position is right
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
         }
 
-        if(state == State::DRIVING_NEED_TO_PIT_STOP && direction == Direction::RIGHT) // change track to downtrack to get to the pitstop
+        if(state == State::DRIVING_NEED_TO_PIT_STOP && direction == Direction::RIGHT) // change path to downtrack to get to the pitstop
         {
             direction = Direction::RIGHT_DOWN;
         }
 
-        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPTRACK_COORD_X) // change uptrack to downtrack if coords are right
+        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPPATH_COORD_X) // change uptrack to downtrack if coords are right
         {
             direction = Direction::LEFT_DOWN;
         }
@@ -199,7 +200,7 @@ std::pair<int,int> Bolide::upPSMode(int x, int y)
     {
         x--;
     }
-    if(x <= road.UP_UPTRACK_COORD_X)
+    if(x <= road.UP_UPPATH_COORD_X)
     {
         state = State::DRIVING;
         direction = Direction::LEFT;
@@ -218,7 +219,7 @@ std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
     int help_y = y - 1;
     int help_x = x;
     counter++;
-    if(x < road.UP_DOWNTRACK_COORD_X) // if still changing path
+    if(x < road.UP_DOWNPATH_COORD_X) // if still changing path
     {
         help_x = help_x + 1;
         counter = 0;
@@ -270,7 +271,7 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
     if(direction == Direction::RIGHT_DOWN)
     {
         counter++;
-        if(x < road.DOWN_DOWNTRACK_COORD_X && counter > road.COORDS_DIFFERENCE) // if still changing path
+        if(x < road.DOWN_DOWNPATH_COORD_X && counter > road.COORDS_DIFFERENCE) // if still changing path
         {
             help_x = help_x + 1;
             counter = 0;
