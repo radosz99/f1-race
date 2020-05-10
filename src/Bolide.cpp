@@ -6,7 +6,7 @@
 
 Bolide::Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
 {
-    fuelCondition = 0.2f;
+    fuelCondition = 0.6f;
     distance = 0;
 }
 
@@ -24,7 +24,7 @@ void Bolide::run()
     while(road.getRaceCont())
     {
         fuelCondition = fuelCondition * 0.995;
-        int delay = Random().randomInt(15 * (6-id), 100);
+        int delay = Random().randomInt(55 - 15*fuelCondition, 80 - 15*fuelCondition);
         
         if(direction == Direction::DOWN || direction == Direction::UP || direction == Direction::UP_PIT_STOP)
         {
@@ -32,9 +32,6 @@ void Bolide::run()
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        //TODO: fix bug with too fast free state in pitstop
-        //TODO: make pitstop manager
-        //TODO: add overtaking mode in both up and down paths
         if(state == State::PIT_STOP)
         {
             pitstopCounter++;
@@ -68,7 +65,6 @@ void Bolide::run()
             }
         }
 
-        //TODO: bug when cant change path (DOWN_UPPATH -> DOWN_DOWNPATH), should wait or go UP
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_PATH_BORDER) // if pitstop is needed and position is right
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
