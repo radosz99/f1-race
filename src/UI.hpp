@@ -8,10 +8,10 @@
 class UI
 {
 public:
-    UI(const std::array<Bolide, 6>&bolides, Road &road, const std::array<Pitstop, 3>&pitstopes);
+    UI(const std::array<Bolide, 10>&bolides, Road &road, const std::array<Pitstop, 3>&pitstopes);
     ~UI();
     std::mutex change_mutex;
-    const std::array<Bolide, 6>& bolides;
+    const std::array<Bolide, 10>& bolides;
     const std::array<Pitstop, 3>& pitstopes;
     Road &road;
 
@@ -24,8 +24,9 @@ private:
     void update();
     void initializeWindow();
     void endVisualisation();
+    std::string getProgressBar(float progress);
     void destroyWindow(WINDOW* window);
     WINDOW *create_newwin(int height, int width, int starty, int startx);
-    WINDOW *bolide1, *bolide2, *bolide3, *bolide4, *bolide5, *bolide6;
+    WINDOW *bolide1, *bolide2, *bolide3, *bolide4, *bolide5, *bolide6, *bolide7, *bolide8, *bolide9, *bolide10;
     WINDOW *internal_win, *external_win, *pitstop_win, *pit1, *pit2, *pit3, *pit_info1, *pit_info2, *pit_info3;
 };

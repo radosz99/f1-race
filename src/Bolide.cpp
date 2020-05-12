@@ -6,8 +6,9 @@
 
 Bolide::Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
 {
-    fuelCondition = 0.6f;
+    fuelCondition = static_cast<float> (static_cast<float>(Random().randomInt(40,100))/100);
     distance = 0;
+    skill = static_cast<float> (static_cast<float>(Random().randomInt(20,90))/100);
 }
 
 Bolide::~Bolide()
@@ -24,7 +25,8 @@ void Bolide::run()
     while(road.getRaceCont())
     {
         fuelCondition = fuelCondition * 0.995;
-        int delay = Random().randomInt(55 - 15*fuelCondition, 80 - 15*fuelCondition);
+        int minimumDelay = (35 - 15*fuelCondition)/skill - turbo;
+        int delay = Random().randomInt(minimumDelay, minimumDelay + 20);
         
         if(direction == Direction::DOWN || direction == Direction::UP || direction == Direction::UP_PIT_STOP)
         {
@@ -35,7 +37,7 @@ void Bolide::run()
         if(state == State::PIT_STOP)
         {
             pitstopCounter++;
-            if(pitstopCounter < 50)
+            if(pitstopCounter < 100 * skill)
             {
                 continue;
             }
@@ -44,12 +46,15 @@ void Bolide::run()
             direction = Direction::LEFT_PIT_STOP;
 
         }
+        //TODO: bug when sometimes turbo is set, but it shouldn't
+        //TODO: left_up is set in some weird moments
+        //TODO: add something like right_up when no pitstop is needed (before it add overtaking at the right)
+        //TODO: if right down and border is getting closer --> up
         std::scoped_lock lock(mtx);
 
         int x = road.getCoords(id).first;
         int y = road.getCoords(id).second;
         std::pair<int,int> newCoords;
-        triesCounter++;
 
         if(state == State::WAITING_FOR_PIT_STOP) // looking for available pitstop
         {
@@ -65,6 +70,20 @@ void Bolide::run()
             }
         }
 
+        if(!road.checkIfPositionOccupied(x + 1 , y + 1, id) && overtaking)
+        {
+            failureCounter = 0;
+            if(overtakingCounter < 75)
+            {
+                overtakingCounter++;
+            }
+
+            else
+            {
+                overtaking = false;
+                turbo = 0;
+            }
+        }
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_PATH_BORDER) // if pitstop is needed and position is right
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
@@ -75,7 +94,7 @@ void Bolide::run()
             direction = Direction::RIGHT_DOWN;
         }
 
-        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPPATH_COORD_X) // change uptrack to downtrack if coords are right
+        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPPATH_COORD_X && direction != Direction::LEFT_UP && !overtaking) // change uptrack to downtrack if coords are right
         {
             direction = Direction::LEFT_DOWN;
         }
@@ -109,14 +128,20 @@ void Bolide::run()
             case Direction::LEFT_PIT_STOP:
                 newCoords = leftPSMode(x, y);
                 break;
+            case Direction::LEFT_UP:
+                newCoords = leftUpMode(x, y);
+                break;
         }
-
+        // sekcja krytyczna
         road.setCoords(id, newCoords);
     }
 }
 
 std::pair<int,int> Bolide::downMode(int x, int y)
 {
+    failureCounter = 0;
+    overtakingCounter = 0;
+    overtaking = false;
     int help_x = x + 1;
     if(!road.checkIfPositionOccupied(help_x, y, id))
     {
@@ -140,6 +165,11 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
     else
     {
         failureCounter++;
+        if(failureCounter > 3 && y > road.BORDER_LEFT + 15 && !road.checkIfPositionOccupied(x-4, y, id)){
+            turbo = 20;
+            overtaking = true;
+            direction = Direction::LEFT_UP;
+        }
     }
     
     if(y <= road.BORDER_LEFT)
@@ -180,7 +210,6 @@ std::pair<int,int> Bolide::upMode(int x, int y)
     {
         direction = Direction::LEFT;
         failureCounter = 0;
-        triesCounter = 0;
     }
     return std::make_pair(x, y);
 }
@@ -212,6 +241,8 @@ std::pair<int,int> Bolide::upPSMode(int x, int y)
 
 std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
 {
+    overtakingCounter = 0;
+    
     int help_y = y - 1;
     int help_x = x;
     counter++;
@@ -224,7 +255,6 @@ std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
     {
         direction = Direction::LEFT;
         failureCounter = 0;
-        triesCounter = 0;
     }
 
     if(!road.checkIfPositionOccupied(help_x, help_y, id))
@@ -238,6 +268,33 @@ std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
     }
     return std::make_pair(x, y);
 }
+
+std::pair<int,int> Bolide::leftUpMode(int x, int y)
+{
+    int help_y = y - 1;
+    int help_x = x;
+    if(x > road.UP_UPPATH_COORD_X) // if still changing path
+    {
+        help_x = help_x - 1;
+    }
+    else // if path-change is done
+    {
+        direction = Direction::LEFT;
+        failureCounter = 0;
+    }
+
+    if(!road.checkIfPositionOccupied(help_x, help_y, id))
+    {
+        y--;
+        x = help_x;
+    }
+    if(y < road.BORDER_LEFT)
+    {
+        direction = Direction::DOWN;
+    }
+    return std::make_pair(x, y);
+}
+
 
 std::pair<int,int> Bolide::rightPSMode(int x, int y)
 {
@@ -323,6 +380,8 @@ std::string Bolide::getDirectionString() const
             return "RIGHT_PIT_STOP";
         case Direction::LEFT_PIT_STOP:
             return "LEFT_PIT_STOP";
+        case Direction::LEFT_UP:
+            return "LEFT_UP";
     }   
 }
 
@@ -374,7 +433,24 @@ int Bolide::getFailureCounter() const
 {
     return failureCounter;
 }
-int Bolide::getTriesCounter() const
+
+
+float Bolide::getSkill() const
 {
-    return triesCounter;
+    return skill;
+}
+
+bool Bolide::getOvertaking() const
+{
+    return overtaking;
+}
+
+int Bolide::getTurbo() const
+{
+    return turbo;
+}
+
+int Bolide::getOvertakingCounter() const
+{
+    return overtakingCounter;
 }

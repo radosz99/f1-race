@@ -24,9 +24,12 @@ public:
     void setState(State state);
     void fillFuelTank();
     Road &road;
-    const float FUEL_RATIO_ALERT = 0.2f;
+    const float FUEL_RATIO_ALERT = 0.05f;
     int getFailureCounter() const;
-    int getTriesCounter() const;
+    float getSkill() const;
+    bool getOvertaking() const;
+    int getTurbo() const;
+    int getOvertakingCounter() const;
 
 
 private:
@@ -34,7 +37,10 @@ private:
     int pitstopId = -1;
     int id;
     int failureCounter = 0;
-    int triesCounter = 0;
+    float skill;
+    int turbo = 0;
+    int overtakingCounter = 0;
+    bool overtaking = false;
     std::atomic<float> speed = 0.0f;
     std::thread thread;
     std::mutex mtx;
@@ -44,6 +50,7 @@ private:
     std::atomic<Direction> direction = Direction::RIGHT;
     std::pair<int,int> downMode(int x, int y);
     std::pair<int,int> leftDownMode(int x, int y, int &counter);
+    std::pair<int,int> leftUpMode(int x, int y);
     std::pair<int,int> upMode(int x, int y);
     std::pair<int,int> upPSMode(int x, int y);
     std::pair<int,int> rightPSMode(int x, int y);

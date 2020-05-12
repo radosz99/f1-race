@@ -1,6 +1,6 @@
 #include "UI.hpp"
 
-UI::UI(const std::array<Bolide,6>& bolides, Road &road, const std::array<Pitstop, 3>&pitstopes): bolides(bolides), road(road), pitstopes(pitstopes)
+UI::UI(const std::array<Bolide,10>& bolides, Road &road, const std::array<Pitstop, 3>&pitstopes): bolides(bolides), road(road), pitstopes(pitstopes)
 {
 	initscr();
 	cbreak();
@@ -116,6 +116,10 @@ void UI::refreshView()
         bolide4 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(3).first,road.getCoords(3).second);
         bolide5 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(4).first,road.getCoords(4).second);
         bolide6 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(5).first,road.getCoords(5).second);
+        bolide7 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(6).first,road.getCoords(6).second);
+        bolide8 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(7).first,road.getCoords(7).second);
+        bolide9 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(8).first,road.getCoords(8).second);
+        bolide10 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(9).first,road.getCoords(9).second);
 
         init_pair(2, COLOR_RED, COLOR_BLACK);
         wattron(bolide1,COLOR_PAIR(2));
@@ -143,20 +147,44 @@ void UI::refreshView()
         wrefresh (bolide5);
         wattroff(bolide5,COLOR_PAIR(6));
         init_pair(7, COLOR_BLUE, COLOR_BLACK);
-        wattron(bolide6,COLOR_PAIR(7));
+        wattron(bolide6,COLOR_PAIR(2));
         box(bolide6,0,0);
         wrefresh (bolide6);
-        wattroff(bolide6,COLOR_PAIR(7));
+        wattroff(bolide6,COLOR_PAIR(2));
+        init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+        wattron(bolide7,COLOR_PAIR(3));
+        box(bolide7,0,0);
+        wrefresh (bolide7);
+        wattroff(bolide7,COLOR_PAIR(3));
+        init_pair(7, COLOR_BLUE, COLOR_BLACK);
+        wattron(bolide8,COLOR_PAIR(4));
+        box(bolide8,0,0);
+        wrefresh (bolide8);
+        wattroff(bolide8,COLOR_PAIR(4));
+        init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+        wattron(bolide9,COLOR_PAIR(5));
+        box(bolide9,0,0);
+        wrefresh (bolide9);
+        wattroff(bolide9,COLOR_PAIR(5));
+        init_pair(7, COLOR_BLUE, COLOR_BLACK);
+        wattron(bolide10,COLOR_PAIR(6));
+        box(bolide10,0,0);
+        wrefresh (bolide10);
+        wattroff(bolide10,COLOR_PAIR(6));
 
         refresh();
         update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(280));
+        std::this_thread::sleep_for(std::chrono::milliseconds(60));
         destroyWindow(bolide1);
         destroyWindow(bolide2);
         destroyWindow(bolide3);
         destroyWindow(bolide4);
         destroyWindow(bolide5);
         destroyWindow(bolide6);
+        destroyWindow(bolide7);
+        destroyWindow(bolide8);
+        destroyWindow(bolide9);
+        destroyWindow(bolide10);
     }
 }
 
@@ -169,21 +197,29 @@ void UI::update()
     const std::string pitstop1 = "Pit stop 1";
     const std::string pitstop2 = "Pit stop 2";
     const std::string pitstop3 = "Pit stop 3";
+    const std::string engineer = "Engineers: ";
+    const std::string wheel = "Wheels left: ";
+    const std::string fuel = "Fuel left: ";
     mvprintw(3, 180 - pitstop3.size()/2, pitstop3.c_str());
     mvprintw(20, 180 - pitstop2.size()/2, pitstop2.c_str());
     mvprintw(37, 180 - pitstop1.size()/2, pitstop1.c_str());
-
+    int shift = 3;
     for(size_t i = 0; i < bolides.size(); i++)
     {
-        attron(COLOR_PAIR(i+2));
+        int colorId = i%5+ 2;
+        attron(COLOR_PAIR(colorId));
 
-        info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getFuelCondition()) + 
-                " | " + std::to_string(road.getCoords(i).first) + ", " + std::to_string(road.getCoords(i).second) + " | " + bolides[i].getStateString() + " | " + 
-                bolides[i].getDirectionString() + " | " + std::to_string(bolides[i].getFailureCounter()) + "/" + std::to_string(bolides[i].getTriesCounter()) 
-                + "                              ";
+        info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getOvertaking()) + " | " + std::to_string(bolides[i].getSkill()) + 
+                " | " + std::to_string(road.getCoords(i).first) + ", " + std::to_string(road.getCoords(i).second) + " | " + bolides[i].getDirectionString() + " | " + 
+                std::to_string(bolides[i].getFailureCounter()) + " | " + std::to_string(bolides[i].getTurbo())  + " | " + std::to_string(bolides[i].getOvertakingCounter()) + 
+                 "                  ";
 
-        mvprintw(45+i, 3, info.c_str());
-        attroff(COLOR_PAIR(i+2));
+        if(i > 4)
+        {
+            shift = 74;
+        }
+        mvprintw(46 + i%5, shift, info.c_str());
+        attroff(COLOR_PAIR(colorId));
     }
 
     for(size_t i = 0; i < pitstopes.size(); i++)
@@ -193,9 +229,44 @@ void UI::update()
         attron(COLOR_PAIR(2));
         mvprintw(38 - i*17, 180 - pitstopInfo.size()/2, pitstopInfo.c_str());
         attroff(COLOR_PAIR(2));
+        attron(COLOR_PAIR(7));
+        mvprintw(40 - i*17, 161, "1");
+        mvprintw(40 - i*17, 162, getProgressBar(1.0).c_str());
+        mvprintw(41 - i*17, 161, "2");
+        mvprintw(41 - i*17, 162, getProgressBar(0.03).c_str());
+        mvprintw(42 - i*17, 161, "3");
+        mvprintw(42 - i*17, 162, getProgressBar(0.3).c_str());
+        mvprintw(43 - i*17, 161, "4");
+        mvprintw(43 - i*17, 162, getProgressBar(0.3).c_str());
+        mvprintw(44 - i*17, 161, "f");
+        mvprintw(44 - i*17, 162, getProgressBar(0.3).c_str());
+        mvprintw(46 - i*17, 161, engineer.c_str());
+        mvprintw(47 - i*17, 161, wheel.c_str());
+        mvprintw(48 - i*17, 161, fuel.c_str());
+        attroff(COLOR_PAIR(7));
     }
 }
 
+std::string UI::getProgressBar(float progress)
+{
+    int barLength = 34;
+    std::string finString = " [";
+    std::string progressInPercent = std::to_string((int)std::round(progress * 100));
+    int lpad = std::round(progress * barLength);
+    int rpad = barLength - lpad;
+    for(int i = 0; i < lpad; i++)
+    {
+        finString = finString + "#";
+    }
+    for(int i = 0; i < rpad; i++)
+    {
+        finString = finString + " ";
+    }
+    finString = finString + "]";
+
+    return finString;
+
+}
 WINDOW *UI::create_newwin(int height, int width, int starty, int startx)
 {	
     WINDOW *local_win;

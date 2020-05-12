@@ -32,13 +32,17 @@ class Road
         const int PIT_STOP_COORD_Y = 144;
 
     private:
-        std::pair<int, int> coords[6] = {
-            std::make_pair(DOWN_DOWNPATH_COORD_X, 10), 
-            std::make_pair(DOWN_UPPATH_COORD_X, 10), 
-            std::make_pair(DOWN_DOWNPATH_COORD_X, 20), 
-            std::make_pair(DOWN_UPPATH_COORD_X, 20), 
-            std::make_pair(DOWN_DOWNPATH_COORD_X, 30), 
-            std::make_pair(DOWN_UPPATH_COORD_X, 30)
+        std::pair<int, int> coords[10] = {
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 5), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 5), 
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 15), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 15), 
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 25), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 25),
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 35), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 35),
+            std::make_pair(DOWN_DOWNPATH_COORD_X, 45), 
+            std::make_pair(DOWN_UPPATH_COORD_X, 45)
             };
         std::atomic<bool> race_cont = true;
 
