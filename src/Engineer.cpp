@@ -32,9 +32,10 @@ void Engineer::run()
                         doActivity(0);
                         pitstop.fuelReady = true;
                         activity = -1;
-                        pitstop.wheelStockMtx.lock();
-                        pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.wheelStockMtx.unlock();
+                        pitstop.fuelStockMtx.lock();
+                        pitstop.setFuelStock(pitstop.getFuelStock()-pitstop.fuelNeeded);
+                        pitstop.fuelNeeded = 0.0f;
+                        pitstop.fuelStockMtx.unlock();
                         pitstop.fuelMtx.unlock();
                     }
                 }

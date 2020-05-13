@@ -44,9 +44,10 @@ int PitstopManager::getFreePitstop()
     return pitstopId;
 }
 
-void PitstopManager:: makePitstop(int pitstopId)
+void PitstopManager:: makePitstop(int pitstopId, float fuelCondition)
 {
     pitstopes[pitstopId].setStatus(PitstopState::BUSY);
+    pitstopes[pitstopId].fuelNeeded = 1 - fuelCondition;
 
     while(!pitstopes[pitstopId].fuelReady || !pitstopes[pitstopId].firstWheelReady|| !pitstopes[pitstopId].secondWheelReady ||
             !pitstopes[pitstopId].thirdWheelReady || !pitstopes[pitstopId].fourthWheelReady)

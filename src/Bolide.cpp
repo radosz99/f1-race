@@ -38,7 +38,7 @@ void Bolide::run()
 
         if(state == State::PIT_STOP)
         {
-            pitstopManager.makePitstop(pitstopId);
+            pitstopManager.makePitstop(pitstopId,fuelCondition);
             state = State::AFTER_PIT_STOP;
             direction = Direction::LEFT_PIT_STOP;
 

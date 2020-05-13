@@ -14,7 +14,7 @@ public:
     std::array<Pitstop, 3> &getPitstopes();
 	std::array<Engineer, 9> &getEngineers();
     int getFreePitstop();
-    void makePitstop(int pitstopId);
+    void makePitstop(int pitstopId, float fuelCondition);
 
 private:
     std::mutex askingMutex;
