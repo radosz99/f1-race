@@ -18,8 +18,6 @@ public:
     Road &road;
 
 private:
-    int BOLID_WIDTH = 7;
-    int BOLID_HEIGHT = 4;
     std::unique_ptr<std::thread> refreshThread;
     std::unique_ptr<std::thread> keyboardThread;
     void refreshView();

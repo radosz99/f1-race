@@ -1,11 +1,14 @@
-#include"Pitstop.hpp"
-#include"PitstopState.hpp"
+#include "Pitstop.hpp"
+#include "PitstopState.hpp"
+#include "Random.hpp"
 
 //TODO: add engineer thread with skill atribute and others needed
 Pitstop::Pitstop(int id) : id(id)
 {
-
+    fuelStock = static_cast<float> (static_cast<float>(Random().randomInt(50,100))/10);
+    wheelStock = Random().randomInt(20,40);
 }
+
 PitstopState Pitstop::getStatus() const
 {
     return status;
@@ -59,6 +62,27 @@ float Pitstop::getFuelProgress() const
 {
     return fuelProgress;
 }
+
+float Pitstop::getFuelStock() const
+{
+    return fuelStock;
+}
+
+int Pitstop::getWheelStock() const
+{
+    return wheelStock;
+}
+
+void Pitstop::setFuelStock(float newFuelStock)
+{
+    fuelStock = newFuelStock;
+}
+
+void Pitstop::setWheelStock(int newWheelStock)
+{
+    wheelStock = newWheelStock;
+}
+
 
 void Pitstop::setFirstWheelProgress(float progress)
 {

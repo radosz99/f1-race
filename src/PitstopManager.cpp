@@ -7,10 +7,10 @@ std::array<Pitstop, 3> &PitstopManager::getPitstopes()
 	return pitstopes;
 }
 
-// std::array<Engineer, 9> &PitstopManager::getEngineers() 
-// {
-// 	return engineers;
-// }
+std::array<Engineer, 9> &PitstopManager::getEngineers() 
+{
+	return engineers;
+}
 
 PitstopManager::PitstopManager()
 {
@@ -24,6 +24,7 @@ PitstopManager::~PitstopManager()
 
 int PitstopManager::getFreePitstop()
 {
+    //TODO: bug when sometimes two bolides get the same pitstop (they are really close to each other)
     std::scoped_lock(askingMutex);
     int pitstopId = -1;
     bool free = false;
@@ -35,7 +36,7 @@ int PitstopManager::getFreePitstop()
             {
                 pitstopId = i;
                 free = true;
-                pitstopes[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLIDE);
+                pitstopes[i].setStatus(PitstopState::WAITING_FOR_BOLIDE);
                 break;
             }
         }
@@ -46,12 +47,12 @@ int PitstopManager::getFreePitstop()
 void PitstopManager:: makePitstop(int pitstopId)
 {
     pitstopes[pitstopId].setStatus(PitstopState::BUSY);
-    int delayCount = Random().randomInt(100, 160);
 
-	for (int i = 1; i <= delayCount; i++)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-		pitstopes[pitstopId].setFuelProgress(static_cast<float>(i) / static_cast<float>(delayCount));
-	}
+    while(!pitstopes[pitstopId].fuelReady || !pitstopes[pitstopId].firstWheelReady|| !pitstopes[pitstopId].secondWheelReady ||
+            !pitstopes[pitstopId].thirdWheelReady || !pitstopes[pitstopId].fourthWheelReady)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));    
+    }
+
 	//progress = 0.0f;
 }

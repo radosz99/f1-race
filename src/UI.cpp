@@ -197,9 +197,6 @@ void UI::update()
     const std::string pitstop1 = "Pit stop 1";
     const std::string pitstop2 = "Pit stop 2";
     const std::string pitstop3 = "Pit stop 3";
-    const std::string engineer = "Engineers: ";
-    const std::string wheel = "Wheels left: ";
-    const std::string fuel = "Fuel left: ";
     mvprintw(3, 180 - pitstop3.size()/2, pitstop3.c_str());
     mvprintw(20, 180 - pitstop2.size()/2, pitstop2.c_str());
     mvprintw(37, 180 - pitstop1.size()/2, pitstop1.c_str());
@@ -210,7 +207,7 @@ void UI::update()
         attron(COLOR_PAIR(colorId));
 
         info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getOvertaking()) + " | " + std::to_string(bolides[i].getSkill()) + 
-                " | " + std::to_string(road.getCoords(i).first) + ", " + std::to_string(road.getCoords(i).second) + " | " + bolides[i].getDirectionString() + " | " + 
+                "% | " + std::to_string(road.getCoords(i).first) + ", " + std::to_string(road.getCoords(i).second) + " | " + bolides[i].getDirectionString() + " | " + 
                 std::to_string(bolides[i].getFailureCounter()) + " | " + std::to_string(bolides[i].getTurbo())  + " | " + std::to_string(bolides[i].getOvertakingCounter()) + 
                  "                  ";
 
@@ -224,6 +221,10 @@ void UI::update()
 
     for(size_t i = 0; i < pitstopManager.getPitstopes().size(); i++)
     {
+        std::string engineer = "Engineers: ";
+        std::string wheel = "Wheels left: ";
+        std::string fuel = "Fuel left: ";
+        std::string engineersSkills = "";
         pitstopInfo = pitstopManager.getPitstopes()[i].getStateString();
         mvprintw(38 - i*17, 161, newPitstopInfo.c_str()); // clear recent info
         attron(COLOR_PAIR(2));
@@ -231,18 +232,25 @@ void UI::update()
         attroff(COLOR_PAIR(2));
         attron(COLOR_PAIR(7));
         mvprintw(40 - i*17, 161, "1");
-        mvprintw(40 - i*17, 162, getProgressBar(1.0).c_str());
+        mvprintw(40 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getFirstWheelProgress()).c_str());
         mvprintw(41 - i*17, 161, "2");
-        mvprintw(41 - i*17, 162, getProgressBar(0.03).c_str());
+        mvprintw(41 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getSecondWheelProgress()).c_str());
         mvprintw(42 - i*17, 161, "3");
-        mvprintw(42 - i*17, 162, getProgressBar(0.3).c_str());
+        mvprintw(42 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getThirdWheelProgress()).c_str());
         mvprintw(43 - i*17, 161, "4");
-        mvprintw(43 - i*17, 162, getProgressBar(0.3).c_str());
+        mvprintw(43 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getFourthWheelProgress()).c_str());
         mvprintw(44 - i*17, 161, "f");
         mvprintw(44 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getFuelProgress()).c_str());
+        engineer += " 3    ";
         mvprintw(46 - i*17, 161, engineer.c_str());
+        wheel += " " + std::to_string(pitstopManager.getPitstopes()[i].getWheelStock()) + "    ";
         mvprintw(47 - i*17, 161, wheel.c_str());
+        fuel += " " + std::to_string(pitstopManager.getPitstopes()[i].getFuelStock()) + "    ";
         mvprintw(48 - i*17, 161, fuel.c_str());
+        engineersSkills += "E. 1 - " + std::to_string(pitstopManager.getEngineers()[i * 3 + 0].getSkill()) + "% | ";
+        engineersSkills += "E. 2 - " + std::to_string(pitstopManager.getEngineers()[i * 3 + 1].getSkill()) + "% | ";
+        engineersSkills += "E. 3 - " + std::to_string(pitstopManager.getEngineers()[i * 3 + 2].getSkill()) + "%";
+        mvprintw(49 - i*17, 161, engineersSkills.c_str());
         attroff(COLOR_PAIR(7));
     }
 }
@@ -286,11 +294,11 @@ void UI::endVisualisation()
         switch (keyPressed)
         {
             case 27: // ESCAPE KEY
+                for(size_t i = 0; i < pitstopManager.getEngineers().size(); i++)
+                {
+                    pitstopManager.getEngineers()[i].setRaceCont(false);
+                }
                 road.setRaceCont(false);
-                // for(size_t i = 0; i<pitstopManager.getEngineers().size(); i++)
-                // {
-                //     pitstopManager.getEngineers()[i].setRaceCont(false);
-                // }
                 break;
         }
     }

@@ -180,7 +180,6 @@ std::pair<int,int> Bolide::leftPSMode(int x, int y)
     if(y <= road.PIT_STOP_BORDER_RIGHT)
     {
         fillFuelTank();
-        pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::FREE);
         pitstopId = -1;
         direction = Direction::UP_PIT_STOP;
     }
@@ -376,9 +375,9 @@ void Bolide::setState(State stat)
     state = stat;
 }
 
-float Bolide::getFuelCondition() const
+int Bolide::getFuelCondition() const
 {
-    return fuelCondition;
+    return static_cast<int>(fuelCondition * 100);
 }
 
 int Bolide::getId() const
@@ -421,9 +420,9 @@ int Bolide::getFailureCounter() const
 }
 
 
-float Bolide::getSkill() const
+int Bolide::getSkill() const
 {
-    return skill;
+    return static_cast<int>(skill * 100);
 }
 
 bool Bolide::getOvertaking() const

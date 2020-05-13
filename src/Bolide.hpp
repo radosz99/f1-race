@@ -20,7 +20,7 @@ public:
     std::string getDirectionString() const;
     Direction getDirection() const;
     int getId() const;
-    float getFuelCondition() const;
+    int getFuelCondition() const;
     void setFuelCondition(float cond);
     void setState(State state);
     void fillFuelTank();
@@ -28,7 +28,7 @@ public:
     Road &road;
     const float FUEL_RATIO_ALERT = 0.05f;
     int getFailureCounter() const;
-    float getSkill() const;
+    int getSkill() const;
     bool getOvertaking() const;
     int getTurbo() const;
     int getOvertakingCounter() const;

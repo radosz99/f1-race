@@ -27,19 +27,19 @@ private:
 		}
 	};
 
-	// std::array<Engineer, 9> engineers
-	// {
-	// 	{
-	// 		{ 0, 0 },
-	// 		{ 1, 0 },
-	// 		{ 2, 0 },
-	// 		{ 3, 1 },
-	// 		{ 4, 1 },
-	// 		{ 5, 1 },
-	// 		{ 6, 2 },
-	// 		{ 7, 2 },
-	// 		{ 8, 2 },
-	// 	}
-	// };
+	std::array<Engineer, 9> engineers
+	{
+		{
+			{ 0, pitstopes[0] },
+			{ 1, pitstopes[0] },
+			{ 2, pitstopes[0] },
+			{ 3, pitstopes[1] },
+			{ 4, pitstopes[1] },
+			{ 5, pitstopes[1] },
+			{ 6, pitstopes[2] },
+			{ 7, pitstopes[2] },
+			{ 8, pitstopes[2] },
+		}
+	};
 
 };
