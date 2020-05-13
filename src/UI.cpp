@@ -1,6 +1,6 @@
 #include "UI.hpp"
 
-UI::UI(const std::array<Bolide,10>& bolides, Road &road, const std::array<Pitstop, 3>&pitstopes): bolides(bolides), road(road), pitstopes(pitstopes)
+UI::UI(const std::array<Bolide,10>& bolides, Road &road, PitstopManager &pitstopManager): bolides(bolides), road(road), pitstopManager(pitstopManager)
 {
 	initscr();
 	cbreak();
@@ -222,9 +222,9 @@ void UI::update()
         attroff(COLOR_PAIR(colorId));
     }
 
-    for(size_t i = 0; i < pitstopes.size(); i++)
+    for(size_t i = 0; i < pitstopManager.getPitstopes().size(); i++)
     {
-        pitstopInfo = pitstopes[i].getStateString();
+        pitstopInfo = pitstopManager.getPitstopes()[i].getStateString();
         mvprintw(38 - i*17, 161, newPitstopInfo.c_str()); // clear recent info
         attron(COLOR_PAIR(2));
         mvprintw(38 - i*17, 180 - pitstopInfo.size()/2, pitstopInfo.c_str());

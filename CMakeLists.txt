@@ -12,7 +12,7 @@ include_directories(${CURSES_INCLUDE_DIR})
 # threads
 find_package(Threads REQUIRED)
 
-set(SRC src/main.cpp src/Bolide.cpp src/UI.cpp src/Random.cpp src/TrackManager.cpp src/Road.cpp src/Pitstop.cpp)
+set(SRC src/main.cpp src/Bolide.cpp src/UI.cpp src/PitstopManager.cpp src/Random.cpp src/TrackManager.cpp src/Road.cpp src/Pitstop.cpp)
 
 add_executable(f1-race ${SRC})
 target_compile_options(f1-race PRIVATE -Wall -Wextra -Wpedantic -O3)

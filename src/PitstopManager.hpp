@@ -4,8 +4,12 @@
 
 class PitstopManager
 {
+
 public:
-    const std::array<Pitstop, 3> &getPitstopes();
+    PitstopManager();
+    ~PitstopManager();
+    std::array<Pitstop, 3> &getPitstopes();
+
 private:
 	std::array<Pitstop, 3> pitstopes
 	{

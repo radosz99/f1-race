@@ -5,14 +5,16 @@
 #include <mutex>
 #include "Bolide.hpp"
 #include "Pitstop.hpp"
+#include "PitstopManager.hpp"
+
 class UI
 {
 public:
-    UI(const std::array<Bolide, 10>&bolides, Road &road, const std::array<Pitstop, 3>&pitstopes);
+    UI(const std::array<Bolide, 10>&bolides, Road &road, PitstopManager &pitstopManager);
     ~UI();
     std::mutex change_mutex;
     const std::array<Bolide, 10>& bolides;
-    const std::array<Pitstop, 3>& pitstopes;
+    PitstopManager &pitstopManager;
     Road &road;
 
 private:

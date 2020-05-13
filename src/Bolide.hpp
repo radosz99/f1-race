@@ -8,11 +8,12 @@
 #include"State.hpp"
 #include"Direction.hpp"
 #include "Pitstop.hpp"
+#include "PitstopManager.hpp"
 
 class Bolide
 {
 public:
-    Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes);
+    Bolide(int id, Road &road,  PitstopManager &pitstopManager);
     ~Bolide();
     void run();
     std::string getStateString() const;
@@ -23,6 +24,7 @@ public:
     void setFuelCondition(float cond);
     void setState(State state);
     void fillFuelTank();
+    PitstopManager &pitstopManager;
     Road &road;
     const float FUEL_RATIO_ALERT = 0.05f;
     int getFailureCounter() const;
@@ -33,7 +35,6 @@ public:
 
 
 private:
-    std::array<Pitstop, 3>& pitstopes;
     int pitstopId = -1;
     int id;
     int failureCounter = 0;

@@ -1,6 +1,16 @@
 #include "PitstopManager.hpp"
 
-const std::array<Pitstop, 3> &PitstopManager::getPitstopes() 
+std::array<Pitstop, 3> &PitstopManager::getPitstopes() 
 {
 	return pitstopes;
+}
+
+PitstopManager::PitstopManager()
+{
+
+}
+
+PitstopManager::~PitstopManager()
+{
+    
 }

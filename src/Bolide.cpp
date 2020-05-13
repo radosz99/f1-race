@@ -3,8 +3,9 @@
 #include "Direction.hpp"
 #include "Pitstop.hpp"
 #include "PitstopState.hpp"
+#include "PitstopManager.hpp"
 
-Bolide::Bolide(int id, Road &road, std::array<Pitstop, 3>& pitstopes): id(id), road(road), pitstopes(pitstopes), thread(&Bolide::run, this)
+Bolide::Bolide(int id, Road &road, PitstopManager &pitstopManager): id(id), road(road), pitstopManager(pitstopManager), thread(&Bolide::run, this)
 {
     fuelCondition = static_cast<float> (static_cast<float>(Random().randomInt(40,100))/100);
     distance = 0;
@@ -58,12 +59,12 @@ void Bolide::run()
 
         if(state == State::WAITING_FOR_PIT_STOP) // looking for available pitstop
         {
-            for(size_t i = 0; i < pitstopes.size(); i++)
+            for(size_t i = 0; i < pitstopManager.getPitstopes().size(); i++)
             {
-                if(pitstopes[i].getStatus() == PitstopState::FREE)
+                if(pitstopManager.getPitstopes()[i].getStatus() == PitstopState::FREE)
                 {
                     pitstopId = i;
-                    pitstopes[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLIDE);
+                    pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLIDE);
                     state = State::DRIVING_TO_PIT_STOP;
                     break;
                 }
@@ -192,7 +193,7 @@ std::pair<int,int> Bolide::leftPSMode(int x, int y)
     if(y <= road.PIT_STOP_BORDER_RIGHT)
     {
         fillFuelTank();
-        pitstopes[pitstopId].setStatus(PitstopState::FREE);
+        pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::FREE);
         pitstopId = -1;
         direction = Direction::UP_PIT_STOP;
     }
@@ -310,7 +311,7 @@ std::pair<int,int> Bolide::rightPSMode(int x, int y)
     {
         //direction = Direction::LEFT;
         state = State::PIT_STOP;
-        pitstopes[pitstopId].setStatus(PitstopState::BUSY);
+        pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::BUSY);
         
     }
     return std::make_pair(x, y);
