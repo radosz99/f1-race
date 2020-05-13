@@ -49,7 +49,7 @@ void Bolide::run()
         //TODO: bug when sometimes turbo is set, but it shouldn't
         //TODO: left_up is set in some weird moments
         //TODO: add something like right_up when no pitstop is needed (before it add overtaking at the right)
-        //TODO: if right down and border is getting closer --> up
+        //TODO: if right down and border is getting closer --> upr
         std::scoped_lock lock(mtx);
 
         int x = road.getCoords(id).first;
@@ -142,6 +142,7 @@ std::pair<int,int> Bolide::downMode(int x, int y)
     failureCounter = 0;
     overtakingCounter = 0;
     overtaking = false;
+    turbo = 0;
     int help_x = x + 1;
     if(!road.checkIfPositionOccupied(help_x, y, id))
     {
