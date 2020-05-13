@@ -110,16 +110,16 @@ void UI::refreshView()
     while(road.getRaceCont())
     {
         init_color(COLOR_BLUE, 50,600,1000);
-	    bolide1 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(0).first,road.getCoords(0).second);
-        bolide2 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(1).first,road.getCoords(1).second);
-        bolide3 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(2).first,road.getCoords(2).second);
-        bolide4 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(3).first,road.getCoords(3).second);
-        bolide5 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(4).first,road.getCoords(4).second);
-        bolide6 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(5).first,road.getCoords(5).second);
-        bolide7 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(6).first,road.getCoords(6).second);
-        bolide8 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(7).first,road.getCoords(7).second);
-        bolide9 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(8).first,road.getCoords(8).second);
-        bolide10 = create_newwin(BOLID_HEIGHT, BOLID_WIDTH, road.getCoords(9).first,road.getCoords(9).second);
+	    bolide1 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(0).first,road.getCoords(0).second);
+        bolide2 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(1).first,road.getCoords(1).second);
+        bolide3 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(2).first,road.getCoords(2).second);
+        bolide4 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(3).first,road.getCoords(3).second);
+        bolide5 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(4).first,road.getCoords(4).second);
+        bolide6 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(5).first,road.getCoords(5).second);
+        bolide7 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(6).first,road.getCoords(6).second);
+        bolide8 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(7).first,road.getCoords(7).second);
+        bolide9 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(8).first,road.getCoords(8).second);
+        bolide10 = create_newwin(road.BOLID_HEIGHT, road.BOLID_WIDTH, road.getCoords(9).first,road.getCoords(9).second);
 
         init_pair(2, COLOR_RED, COLOR_BLACK);
         wattron(bolide1,COLOR_PAIR(2));
@@ -239,7 +239,7 @@ void UI::update()
         mvprintw(43 - i*17, 161, "4");
         mvprintw(43 - i*17, 162, getProgressBar(0.3).c_str());
         mvprintw(44 - i*17, 161, "f");
-        mvprintw(44 - i*17, 162, getProgressBar(0.3).c_str());
+        mvprintw(44 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getFuelProgress()).c_str());
         mvprintw(46 - i*17, 161, engineer.c_str());
         mvprintw(47 - i*17, 161, wheel.c_str());
         mvprintw(48 - i*17, 161, fuel.c_str());
@@ -256,13 +256,13 @@ std::string UI::getProgressBar(float progress)
     int rpad = barLength - lpad;
     for(int i = 0; i < lpad; i++)
     {
-        finString = finString + "#";
+        finString += "#";
     }
     for(int i = 0; i < rpad; i++)
     {
-        finString = finString + " ";
+        finString += " ";
     }
-    finString = finString + "]";
+    finString += "]";
 
     return finString;
 

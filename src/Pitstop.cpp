@@ -34,3 +34,53 @@ std::string Pitstop::getStateString() const
             return "WAITING_FOR_BOLIDE";
     }
 }
+
+float Pitstop::getFirstWheelProgress() const
+{
+    return firstWheelProgress;
+}
+
+float Pitstop::getSecondWheelProgress() const
+{
+    return secondWheelProgress;
+}
+
+float Pitstop::getThirdWheelProgress() const
+{
+    return thirdWheelProgress;
+}
+
+float Pitstop::getFourthWheelProgress() const
+{
+    return fourthWheelProgress;
+}
+
+float Pitstop::getFuelProgress() const
+{
+    return fuelProgress;
+}
+
+void Pitstop::setFirstWheelProgress(float progress)
+{
+    firstWheelProgress = progress;
+}
+
+void Pitstop::setSecondWheelProgress(float progress)
+{
+    secondWheelProgress = progress;
+}
+
+void Pitstop::setThirdWheelProgress(float progress)
+{
+    thirdWheelProgress = progress;
+}
+
+void Pitstop::setFourthWheelProgress(float progress)
+{
+    fourthWheelProgress = progress;
+}
+
+void Pitstop::setFuelProgress(float progress)
+{
+    fuelProgress = progress;
+}

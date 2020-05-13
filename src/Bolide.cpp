@@ -35,22 +35,14 @@ void Bolide::run()
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
         if(state == State::PIT_STOP)
         {
-            pitstopCounter++;
-            if(pitstopCounter < 100 * skill)
-            {
-                continue;
-            }
-            pitstopCounter = 0;
+            pitstopManager.makePitstop(pitstopId);
             state = State::AFTER_PIT_STOP;
             direction = Direction::LEFT_PIT_STOP;
 
         }
-        //TODO: bug when sometimes turbo is set, but it shouldn't
-        //TODO: left_up is set in some weird moments
-        //TODO: add something like right_up when no pitstop is needed (before it add overtaking at the right)
-        //TODO: if right down and border is getting closer --> upr
         std::scoped_lock lock(mtx);
 
         int x = road.getCoords(id).first;
@@ -59,15 +51,10 @@ void Bolide::run()
 
         if(state == State::WAITING_FOR_PIT_STOP) // looking for available pitstop
         {
-            for(size_t i = 0; i < pitstopManager.getPitstopes().size(); i++)
+            pitstopId = pitstopManager.getFreePitstop();
+            if(pitstopId != -1)
             {
-                if(pitstopManager.getPitstopes()[i].getStatus() == PitstopState::FREE)
-                {
-                    pitstopId = i;
-                    pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::WAITING_FOR_BOLIDE);
-                    state = State::DRIVING_TO_PIT_STOP;
-                    break;
-                }
+                state = State::DRIVING_TO_PIT_STOP;
             }
         }
 
@@ -309,10 +296,7 @@ std::pair<int,int> Bolide::rightPSMode(int x, int y)
             
     if(y > road.PIT_STOP_COORD_Y) // if right limit reached
     {
-        //direction = Direction::LEFT;
         state = State::PIT_STOP;
-        pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::BUSY);
-        
     }
     return std::make_pair(x, y);
 }
