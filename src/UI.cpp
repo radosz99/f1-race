@@ -287,6 +287,10 @@ void UI::endVisualisation()
         {
             case 27: // ESCAPE KEY
                 road.setRaceCont(false);
+                // for(size_t i = 0; i<pitstopManager.getEngineers().size(); i++)
+                // {
+                //     pitstopManager.getEngineers()[i].setRaceCont(false);
+                // }
                 break;
         }
     }
