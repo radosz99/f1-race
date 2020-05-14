@@ -180,6 +180,7 @@ std::pair<int,int> Bolide::leftPSMode(int x, int y)
     if(y <= road.PIT_STOP_BORDER_RIGHT)
     {
         fillFuelTank();
+        pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::FREE);
         pitstopId = -1;
         direction = Direction::UP_PIT_STOP;
     }
@@ -438,4 +439,9 @@ int Bolide::getTurbo() const
 int Bolide::getOvertakingCounter() const
 {
     return overtakingCounter;
+}
+
+int Bolide::getPitstopId() const
+{
+    return pitstopId;
 }

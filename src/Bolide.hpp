@@ -32,6 +32,7 @@ public:
     bool getOvertaking() const;
     int getTurbo() const;
     int getOvertakingCounter() const;
+    int getPitstopId() const;
 
 
 private:

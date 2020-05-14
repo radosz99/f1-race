@@ -29,13 +29,13 @@ void Engineer::run()
                     {
                         activity = 0;
                         pitstop.fuelHandled = true;
-                        doActivity(0);
-                        pitstop.fuelReady = true;
-                        activity = -1;
                         pitstop.fuelStockMtx.lock();
                         pitstop.setFuelStock(pitstop.getFuelStock()-pitstop.fuelNeeded);
                         pitstop.fuelNeeded = 0.0f;
                         pitstop.fuelStockMtx.unlock();
+                        doActivity(0);
+                        pitstop.fuelReady = true;
+                        activity = -1;
                         pitstop.fuelMtx.unlock();
                     }
                 }
@@ -45,12 +45,12 @@ void Engineer::run()
                     {
                         activity = 1;
                         pitstop.firstWheelHandled = true;
-                        doActivity(1);
-                        pitstop.firstWheelReady = true;
-                        activity = -1;
                         pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.wheelStockMtx.unlock();
+                        doActivity(1);
+                        pitstop.firstWheelReady = true;
+                        activity = -1;
                         pitstop.firstWheelMtx.unlock();
                     }
                 }
@@ -61,12 +61,12 @@ void Engineer::run()
                     {
                         activity = 2;
                         pitstop.secondWheelHandled = true;
-                        doActivity(2);
-                        pitstop.secondWheelReady = true;
-                        activity = -1;
                         pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.wheelStockMtx.unlock();
+                        doActivity(2);
+                        pitstop.secondWheelReady = true;
+                        activity = -1;
                         pitstop.secondWheelMtx.unlock();
                     }
                 }
@@ -77,12 +77,12 @@ void Engineer::run()
                     {
                         activity = 3;
                         pitstop.thirdWheelHandled = true;
-                        doActivity(3);
-                        pitstop.thirdWheelReady = true;
-                        activity = -1;
                         pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.wheelStockMtx.unlock();
+                        doActivity(3);
+                        pitstop.thirdWheelReady = true;
+                        activity = -1;
                         pitstop.thirdWheelMtx.unlock();
                     }
                 }
@@ -93,19 +93,18 @@ void Engineer::run()
                     {
                         activity = 4;
                         pitstop.fourthWheelHandled = true;
-                        doActivity(4);
-                        pitstop.fourthWheelReady = true;
-                        activity = -1;
                         pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.wheelStockMtx.unlock();
+                        doActivity(4);
+                        pitstop.fourthWheelReady = true;
+                        activity = -1;
                         pitstop.fourthWheelMtx.unlock();
                     }
                 }
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(600));
-            pitstop.setStatus(PitstopState::FREE);
+            std::this_thread::sleep_for(std::chrono::milliseconds(400));
             pitstop.setFuelProgress(0);
             pitstop.setFirstWheelProgress(0);
             pitstop.setSecondWheelProgress(0);
@@ -121,6 +120,10 @@ void Engineer::run()
             pitstop.secondWheelHandled= false;
             pitstop.thirdWheelHandled= false;
             pitstop.fourthWheelHandled = false;
+            while(pitstop.getStatus()==PitstopState::BUSY)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
         }
     }
 }

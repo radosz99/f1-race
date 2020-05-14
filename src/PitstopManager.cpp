@@ -30,6 +30,7 @@ int PitstopManager::getFreePitstop()
     bool free = false;
     while(!free)
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));  
         for(size_t i = 0; i < pitstopes.size(); i++)
         {
             if(pitstopes[i].getStatus() == PitstopState::FREE)
@@ -37,11 +38,10 @@ int PitstopManager::getFreePitstop()
                 pitstopId = i;
                 free = true;
                 pitstopes[i].setStatus(PitstopState::WAITING_FOR_BOLIDE);
-                break;
+                return pitstopId;
             }
         }
     }
-    return pitstopId;
 }
 
 void PitstopManager:: makePitstop(int pitstopId, float fuelCondition)
@@ -54,6 +54,4 @@ void PitstopManager:: makePitstop(int pitstopId, float fuelCondition)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));    
     }
-
-	//progress = 0.0f;
 }

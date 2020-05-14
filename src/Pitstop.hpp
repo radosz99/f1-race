@@ -1,6 +1,6 @@
 #pragma once
-#include<atomic>
-#include<mutex>
+#include <atomic>
+#include <mutex>
 #include"PitstopState.hpp"
 
 class Pitstop
@@ -25,20 +25,20 @@ public:
     void setThirdWheelProgress(float progress);
     void setFourthWheelProgress(float progress);
     void setFuelProgress(float progress);
-    bool firstWheelReady = false, secondWheelReady = false, thirdWheelReady = false, fourthWheelReady = false, fuelReady = false; 
+    std::atomic<bool> firstWheelReady = false, secondWheelReady = false, thirdWheelReady = false, fourthWheelReady = false, fuelReady = false; 
     bool firstWheelHandled = false, secondWheelHandled = false, thirdWheelHandled= false, fourthWheelHandled = false, fuelHandled = false; 
     std::mutex firstWheelMtx, secondWheelMtx, thirdWheelMtx, fourthWheelMtx, fuelMtx, wheelStockMtx, fuelStockMtx;
     float fuelNeeded = 0.0f;
 
 private:
-    PitstopState status = PitstopState::FREE;
+    std::atomic<PitstopState> status = PitstopState::FREE;
     const int id;
-    float firstWheelProgress = 0.0f;
-    float secondWheelProgress = 0.0f;
-    float thirdWheelProgress = 0.0f;
-    float fourthWheelProgress = 0.0f;
-    float fuelProgress = 0.0f;
-    float fuelStock = 0.0f;
-    int wheelStock = 0;
+    std::atomic<float> firstWheelProgress = 0.0f;
+    std::atomic<float> secondWheelProgress = 0.0f;
+    std::atomic<float> thirdWheelProgress = 0.0f;
+    std::atomic<float> fourthWheelProgress = 0.0f;
+    std::atomic<float> fuelProgress = 0.0f;
+    std::atomic<float> fuelStock = 0.0f;
+    std::atomic<int> wheelStock = 0;
 
 };
