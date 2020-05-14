@@ -16,6 +16,7 @@ void Storekeeper::run()
 {
     while(raceCont)
     {
+        //TODO: probably Storekeeper threads still working after ESC
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         if(getWheel())
         {
