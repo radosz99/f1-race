@@ -14,12 +14,14 @@ public:
     TrackManager();
     ~TrackManager();
     const std::array<Bolide, 10> &getBolides();
+	std::array<Storekeeper, 2> &getStorekeepers();
 	Road road;
 	Road &getRoad();
 	PitstopManager &getPitstopManager();
 
 private:
 	PitstopManager pitstopManager;
+	
 
 	std::array<Bolide, 10> bolides
 	{
@@ -35,6 +37,14 @@ private:
 			{ 8, road, pitstopManager},
 			{ 9, road, pitstopManager},
 		  }
+	};
+
+	std::array<Storekeeper, 2> storekeepers
+	{
+		{
+			{pitstopManager.getPitstopes()},
+			{pitstopManager.getPitstopes()},
+		}
 	};
 
 };

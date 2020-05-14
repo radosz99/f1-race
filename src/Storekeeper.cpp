@@ -2,7 +2,7 @@
 #include "PitstopManager.hpp"
 #include <iostream>
 
-Storekeeper::Storekeeper(PitstopManager &pitstopManager): pitstopManager(pitstopManager),thread(&Storekeeper::run, this)
+Storekeeper::Storekeeper(std::array<Pitstop, 3>&pitstopes): pitstopes(pitstopes),thread(&Storekeeper::run, this)
 {
 
 }
@@ -16,12 +16,46 @@ void Storekeeper::run()
 {
     while(raceCont)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        std::cout<<"Yo";
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        if(getWheel())
+        {
+            state = StorekeeperState::RECYCLING;
+            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+            state = StorekeeperState::FREE;
+            pitstopes[0].setWheelStock(pitstopes[0].getWheelStock() + 1);
+        }
     }
 }
 
 void Storekeeper::setRaceCont(bool newRaceCont)
 {
     raceCont = newRaceCont;
+}
+
+bool Storekeeper::getWheel()
+{
+    state = StorekeeperState::SEARCHING;
+    for (size_t i; i < pitstopes.size(); i++)
+    {
+        something = 2;
+        if(pitstopes[i].getUsedWheels() > 0)
+        {
+            pitstopes[i].setUsedWheels(pitstopes[i].getUsedWheels() - 1);
+            return true;    
+        }
+    }
+    return false;
+}
+
+std::string Storekeeper::getStorekeeperStateString()const
+{
+    switch(state)
+    {
+        case StorekeeperState::FREE:
+            return "FREE";
+        case StorekeeperState::RECYCLING:
+            return "RECYCLING";
+        case StorekeeperState::SEARCHING:
+            return "SEARCHING";
+    }
 }

@@ -6,14 +6,16 @@
 #include "Bolide.hpp"
 #include "Pitstop.hpp"
 #include "PitstopManager.hpp"
+#include "Storekeeper.hpp"
 
 class UI
 {
 public:
-    UI(const std::array<Bolide, 10>&bolides, Road &road, PitstopManager &pitstopManager);
+    UI(const std::array<Bolide, 10>&bolides, Road &road, PitstopManager &pitstopManager, std::array<Storekeeper, 2>&storekeepers);
     ~UI();
     std::mutex change_mutex;
     const std::array<Bolide, 10>& bolides;
+    std::array<Storekeeper, 2>&storekeepers;
     PitstopManager &pitstopManager;
     Road &road;
 

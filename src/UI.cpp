@@ -1,6 +1,7 @@
 #include "UI.hpp"
 
-UI::UI(const std::array<Bolide,10>& bolides, Road &road, PitstopManager &pitstopManager): bolides(bolides), road(road), pitstopManager(pitstopManager)
+
+UI::UI(const std::array<Bolide,10>& bolides, Road &road, PitstopManager &pitstopManager, std::array<Storekeeper, 2>& storekeepers): bolides(bolides), road(road), pitstopManager(pitstopManager), storekeepers(storekeepers)
 {
 	initscr();
 	cbreak();
@@ -219,6 +220,10 @@ void UI::update()
         attroff(COLOR_PAIR(colorId));
     }
 
+    mvprintw(49, 140, storekeepers[0].getStorekeeperStateString().c_str());
+    mvprintw(50, 140, storekeepers[1].getStorekeeperStateString().c_str());
+
+
     for(size_t i = 0; i < pitstopManager.getPitstopes().size(); i++)
     {
         std::string engineer = "Engineers: ";
@@ -297,6 +302,11 @@ void UI::endVisualisation()
                 for(size_t i = 0; i < pitstopManager.getEngineers().size(); i++)
                 {
                     pitstopManager.getEngineers()[i].setRaceCont(false);
+                }
+
+                for(size_t i = 0; i < storekeepers.size(); i++)
+                {
+                    storekeepers[i].setRaceCont(false);
                 }
                 road.setRaceCont(false);
                 break;

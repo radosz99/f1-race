@@ -2,14 +2,13 @@
 #include <string.h>
 #include "Bolide.hpp"
 #include "TrackManager.hpp"
-#include "Storekeeper.hpp"
 #include "UI.hpp"
 
 int main(){
 
 	TrackManager trackManager;
-	Storekeeper storekeeper(trackManager.getPitstopManager());
-    UI ui(trackManager.getBolides(), trackManager.getRoad(), trackManager.getPitstopManager());
+	//std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    UI ui(trackManager.getBolides(), trackManager.getRoad(), trackManager.getPitstopManager(), trackManager.getStorekeepers());
 
 	return 0;
 }

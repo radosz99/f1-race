@@ -8,7 +8,6 @@
 Bolide::Bolide(int id, Road &road, PitstopManager &pitstopManager): id(id), road(road), pitstopManager(pitstopManager), thread(&Bolide::run, this)
 {
     fuelCondition = static_cast<float> (static_cast<float>(Random().randomInt(40,100))/100);
-    distance = 0;
     skill = static_cast<float> (static_cast<float>(Random().randomInt(20,90))/100);
 }
 
@@ -58,7 +57,7 @@ void Bolide::run()
             }
         }
 
-        if(!road.checkIfPositionOccupied(x + 1 , y + 1, id) && overtaking)
+        if(!road.checkIfPositionOccupied(x + 1 , y + 1, id) && overtakingUp)
         {
             failureCounter = 0;
             if(overtakingCounter < 75)
@@ -68,10 +67,11 @@ void Bolide::run()
 
             else
             {
-                overtaking = false;
+                overtakingUp = false;
                 turbo = 0;
             }
         }
+        
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_PATH_BORDER) // if pitstop is needed and position is right
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
@@ -79,10 +79,10 @@ void Bolide::run()
 
         if(state == State::DRIVING_NEED_TO_PIT_STOP && direction == Direction::RIGHT) // change path to downtrack to get to the pitstop
         {
-            direction = Direction::RIGHT_DOWN;
+            direction = Direction::DOWN_TO_PITSTOP;
         }
 
-        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPPATH_COORD_X && direction != Direction::LEFT_UP && !overtaking) // change uptrack to downtrack if coords are right
+        if(direction == Direction::LEFT && y < 100 && x == road.UP_UPPATH_COORD_X && direction != Direction::LEFT_UP && !overtakingUp) // change uptrack to downtrack if coords are right
         {
             direction = Direction::LEFT_DOWN;
         }
@@ -92,7 +92,7 @@ void Bolide::run()
             case Direction::RIGHT:
                 newCoords = rightMode(x, y, counter);
                 break;
-            case Direction::RIGHT_DOWN:
+            case Direction::DOWN_TO_PITSTOP:
                 newCoords = rightMode(x, y, counter);
                 break;
             case Direction::UP:
@@ -119,6 +119,9 @@ void Bolide::run()
             case Direction::LEFT_UP:
                 newCoords = leftUpMode(x, y);
                 break;
+            case Direction::RIGHT_UP:
+                newCoords = rightUpMode(x, y);
+                break;
         }
         // sekcja krytyczna
         road.setCoords(id, newCoords);
@@ -129,7 +132,7 @@ std::pair<int,int> Bolide::downMode(int x, int y)
 {
     failureCounter = 0;
     overtakingCounter = 0;
-    overtaking = false;
+    overtakingUp = false;
     turbo = 0;
     int help_x = x + 1;
     if(!road.checkIfPositionOccupied(help_x, y, id))
@@ -156,7 +159,7 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
         failureCounter++;
         if(failureCounter > 3 && y > road.BORDER_LEFT + 15 && !road.checkIfPositionOccupied(x-4, y, id)){
             turbo = 20;
-            overtaking = true;
+            overtakingUp = true;
             direction = Direction::LEFT_UP;
         }
     }
@@ -307,7 +310,7 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
     int help_y = y + 1;
     int help_x = x;
 
-    if(direction == Direction::RIGHT_DOWN)
+    if(direction == Direction::DOWN_TO_PITSTOP)
     {
         counter++;
         if(x < road.DOWN_DOWNPATH_COORD_X && counter > road.COORDS_DIFFERENCE) // if still changing path
@@ -319,7 +322,13 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
         {
             direction = Direction::RIGHT;
         }
+
+        if(y > road.CHANGING_PATH_BORDER) // if border is too closer
+        {
+            direction = Direction::RIGHT;
+        }
     }
+
     if(!road.checkIfPositionOccupied(help_x, help_y, id))
     {
         y = help_y;
@@ -339,6 +348,34 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
     return std::make_pair(x, y);
 }
 
+std::pair<int,int> Bolide::rightUpMode(int x, int y)
+{
+    int help_y = y + 1;
+    int help_x = x;
+    if(x > road.UP_UPPATH_COORD_X) // if still changing path
+    {
+        help_x = help_x - 1;
+    }
+    else // if path-change is done
+    {
+        direction = Direction::LEFT;
+        failureCounter = 0;
+    }
+
+    if(!road.checkIfPositionOccupied(help_x, help_y, id))
+    {
+        y--;
+        x = help_x;
+    }
+    if(y < road.BORDER_LEFT)
+    {
+        direction = Direction::DOWN;
+    }
+    return std::make_pair(x, y);
+}
+
+
+
 Direction Bolide::getDirection() const
 {
     return direction;
@@ -350,8 +387,8 @@ std::string Bolide::getDirectionString() const
     {
         case Direction::DOWN:
             return "DOWN";
-        case Direction::RIGHT_DOWN:
-            return "RIGHT_DOWN";
+        case Direction::DOWN_TO_PITSTOP:
+            return "DOWN_TO_PITSTOP";
         case Direction::LEFT_DOWN:
             return "LEFT_DOWN";
         case Direction::RIGHT:
