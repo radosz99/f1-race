@@ -29,7 +29,7 @@ public:
     const float FUEL_RATIO_ALERT = 0.05f;
     int getFailureCounter() const;
     int getSkill() const;
-    bool getOvertaking() const;
+    bool getOvertakingUp() const;
     int getTurbo() const;
     int getOvertakingCounter() const;
     int getPitstopId() const;

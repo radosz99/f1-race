@@ -71,7 +71,7 @@ void Bolide::run()
                 turbo = 0;
             }
         }
-        
+
         if(fuelCondition < FUEL_RATIO_ALERT && state == State::DRIVING && y < road.CHANGING_PATH_BORDER) // if pitstop is needed and position is right
         {
             state = State::DRIVING_NEED_TO_PIT_STOP;
@@ -463,9 +463,9 @@ int Bolide::getSkill() const
     return static_cast<int>(skill * 100);
 }
 
-bool Bolide::getOvertaking() const
+bool Bolide::getOvertakingUp() const
 {
-    return overtaking;
+    return overtakingUp;
 }
 
 int Bolide::getTurbo() const

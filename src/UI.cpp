@@ -207,7 +207,7 @@ void UI::update()
         int colorId = i%5+ 2;
         attron(COLOR_PAIR(colorId));
 
-        info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getOvertaking()) + " | " + std::to_string(bolides[i].getSkill()) + 
+        info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getOvertakingUp()) + " | " + std::to_string(bolides[i].getSkill()) + 
                 "% | " + std::to_string(road.getCoords(i).first) + ", " + std::to_string(road.getCoords(i).second) + " | " + bolides[i].getDirectionString() + " | " + 
                 std::to_string(bolides[i].getFailureCounter()) + " | " + std::to_string(bolides[i].getTurbo())  + " | " + std::to_string(bolides[i].getOvertakingCounter()) + 
                  " | " + std::to_string(bolides[i].getPitstopId()) +  "                  ";
