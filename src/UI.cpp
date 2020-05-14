@@ -243,9 +243,9 @@ void UI::update()
         mvprintw(44 - i*17, 162, getProgressBar(pitstopManager.getPitstopes()[i].getFuelProgress()).c_str());
         engineer += " 3    ";
         mvprintw(46 - i*17, 161, engineer.c_str());
-        wheel += " " + std::to_string(pitstopManager.getPitstopes()[i].getWheelStock()) + "    ";
+        wheel += " " + std::to_string(pitstopManager.getPitstopes()[i].getWheelStock()) + " | " + std::to_string(pitstopManager.getPitstopes()[i].getUsedWheels()) + "   ";
         mvprintw(47 - i*17, 161, wheel.c_str());
-        fuel += " " + std::to_string(pitstopManager.getPitstopes()[i].getFuelStock()) + "    ";
+        fuel += " " + std::to_string(pitstopManager.getPitstopes()[i].getFuelStock()) + "   ";
         mvprintw(48 - i*17, 161, fuel.c_str());
         engineersSkills += "E. 1 - " + std::to_string(pitstopManager.getEngineers()[i * 3 + 0].getSkill()) + "% | ";
         engineersSkills += "E. 2 - " + std::to_string(pitstopManager.getEngineers()[i * 3 + 1].getSkill()) + "% | ";

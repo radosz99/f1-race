@@ -29,10 +29,8 @@ void Engineer::run()
                     {
                         activity = 0;
                         pitstop.fuelHandled = true;
-                        pitstop.fuelStockMtx.lock();
                         pitstop.setFuelStock(pitstop.getFuelStock()-pitstop.fuelNeeded);
                         pitstop.fuelNeeded = 0.0f;
-                        pitstop.fuelStockMtx.unlock();
                         doActivity(0);
                         pitstop.fuelReady = true;
                         activity = -1;
@@ -45,9 +43,8 @@ void Engineer::run()
                     {
                         activity = 1;
                         pitstop.firstWheelHandled = true;
-                        pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.wheelStockMtx.unlock();
+                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(1);
                         pitstop.firstWheelReady = true;
                         activity = -1;
@@ -61,9 +58,8 @@ void Engineer::run()
                     {
                         activity = 2;
                         pitstop.secondWheelHandled = true;
-                        pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.wheelStockMtx.unlock();
+                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(2);
                         pitstop.secondWheelReady = true;
                         activity = -1;
@@ -77,9 +73,8 @@ void Engineer::run()
                     {
                         activity = 3;
                         pitstop.thirdWheelHandled = true;
-                        pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.wheelStockMtx.unlock();
+                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(3);
                         pitstop.thirdWheelReady = true;
                         activity = -1;
@@ -93,9 +88,8 @@ void Engineer::run()
                     {
                         activity = 4;
                         pitstop.fourthWheelHandled = true;
-                        pitstop.wheelStockMtx.lock();
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.wheelStockMtx.unlock();
+                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(4);
                         pitstop.fourthWheelReady = true;
                         activity = -1;

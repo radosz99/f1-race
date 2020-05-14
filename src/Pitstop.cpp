@@ -73,6 +73,12 @@ int Pitstop::getWheelStock() const
     return wheelStock;
 }
 
+int Pitstop::getUsedWheels() const
+{
+    return usedWheels;
+}
+
+
 void Pitstop::setFuelStock(float newFuelStock)
 {
     fuelStock = newFuelStock;
@@ -81,6 +87,11 @@ void Pitstop::setFuelStock(float newFuelStock)
 void Pitstop::setWheelStock(int newWheelStock)
 {
     wheelStock = newWheelStock;
+}
+
+void Pitstop::setUsedWheels(int newUsedWheels)
+{
+    usedWheels = newUsedWheels;
 }
 
 

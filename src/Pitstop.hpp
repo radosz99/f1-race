@@ -18,6 +18,8 @@ public:
     float getFuelProgress() const;
     float getFuelStock() const;
     int getWheelStock() const;
+    int getUsedWheels() const;
+    void setUsedWheels(int newUsedWheels);
     void setFuelStock(float newFuelStock);
     void setWheelStock(int newWheelStock);
     void setFirstWheelProgress(float progress);
@@ -28,7 +30,7 @@ public:
     std::atomic<bool> firstWheelReady = false, secondWheelReady = false, thirdWheelReady = false, fourthWheelReady = false, fuelReady = false; 
     bool firstWheelHandled = false, secondWheelHandled = false, thirdWheelHandled= false, fourthWheelHandled = false, fuelHandled = false; 
     std::mutex firstWheelMtx, secondWheelMtx, thirdWheelMtx, fourthWheelMtx, fuelMtx, wheelStockMtx, fuelStockMtx;
-    float fuelNeeded = 0.0f;
+    std::atomic<float> fuelNeeded = 0.0f;
 
 private:
     std::atomic<PitstopState> status = PitstopState::FREE;
@@ -38,7 +40,8 @@ private:
     std::atomic<float> thirdWheelProgress = 0.0f;
     std::atomic<float> fourthWheelProgress = 0.0f;
     std::atomic<float> fuelProgress = 0.0f;
-    std::atomic<float> fuelStock = 0.0f;
-    std::atomic<int> wheelStock = 0;
+    std::atomic<float> fuelStock;
+    std::atomic<int> wheelStock;
+    std::atomic<int> usedWheels = 0;
 
 };

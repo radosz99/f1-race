@@ -5,6 +5,7 @@
 #include "Road.hpp"
 #include "Pitstop.hpp"
 #include "PitstopManager.hpp"
+#include "Storekeeper.hpp"
 
 class TrackManager
 {
@@ -19,6 +20,7 @@ public:
 
 private:
 	PitstopManager pitstopManager;
+
 	std::array<Bolide, 10> bolides
 	{
 	   {
