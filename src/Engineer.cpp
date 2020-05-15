@@ -23,26 +23,16 @@ void Engineer::run()
         {
             while(!pitstop.fuelReady || !pitstop.firstWheelReady|| !pitstop.secondWheelReady || !pitstop.thirdWheelReady || !pitstop.fourthWheelReady)
             {
-                if(!pitstop.fuelReady && !pitstop.fuelHandled)
-                {
-                    if(pitstop.fuelMtx.try_lock())
-                    {
-                        activity = 0;
-                        pitstop.fuelHandled = true;
-                        pitstop.setFuelStock(pitstop.getFuelStock()-pitstop.fuelNeeded);
-                        pitstop.fuelNeeded = 0.0f;
-                        doActivity(0);
-                        pitstop.fuelReady = true;
-                        activity = -1;
-                        pitstop.fuelMtx.unlock();
-                    }
-                }
                 if(!pitstop.firstWheelReady && !pitstop.firstWheelHandled)
                 {
                     if(pitstop.firstWheelMtx.try_lock())
                     {
                         activity = 1;
                         pitstop.firstWheelHandled = true;
+                        if(pitstop.getWheelStock() <= 0)
+                        {
+                            pitstop.wait();
+                        }
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(1);
@@ -58,6 +48,10 @@ void Engineer::run()
                     {
                         activity = 2;
                         pitstop.secondWheelHandled = true;
+                        if(pitstop.getWheelStock() <= 0)
+                        {
+                            pitstop.wait();
+                        }
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(2);
@@ -73,6 +67,10 @@ void Engineer::run()
                     {
                         activity = 3;
                         pitstop.thirdWheelHandled = true;
+                        if(pitstop.getWheelStock() <= 0)
+                        {
+                            pitstop.wait();
+                        }
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(3);
@@ -88,12 +86,31 @@ void Engineer::run()
                     {
                         activity = 4;
                         pitstop.fourthWheelHandled = true;
+                        if(pitstop.getWheelStock() <= 0)
+                        {
+                            pitstop.wait();
+                        }
                         pitstop.setWheelStock(pitstop.getWheelStock()-1);
                         pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
                         doActivity(4);
                         pitstop.fourthWheelReady = true;
                         activity = -1;
                         pitstop.fourthWheelMtx.unlock();
+                    }
+                }
+                
+                if(!pitstop.fuelReady && !pitstop.fuelHandled)
+                {
+                    if(pitstop.fuelMtx.try_lock())
+                    {
+                        activity = 0;
+                        pitstop.fuelHandled = true;
+                        pitstop.setFuelStock(pitstop.getFuelStock() - pitstop.fuelNeeded);
+                        pitstop.fuelNeeded = 0.0f;
+                        doActivity(0);
+                        pitstop.fuelReady = true;
+                        activity = -1;
+                        pitstop.fuelMtx.unlock();
                     }
                 }
             }

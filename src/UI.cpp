@@ -204,7 +204,7 @@ void UI::update()
     int shift = 3;
     for(size_t i = 0; i < bolides.size(); i++)
     {
-        int colorId = i%5+ 2;
+        int colorId = i % 5 + 2;
         attron(COLOR_PAIR(colorId));
 
         info = std::to_string(bolides[i].getId()) + " | " + std::to_string(bolides[i].getOvertakingUp()) + " | " + std::to_string(bolides[i].getSkill()) + 

@@ -1,6 +1,7 @@
 #pragma once
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 #include"PitstopState.hpp"
 
 class Pitstop
@@ -29,10 +30,13 @@ public:
     void setFuelProgress(float progress);
     std::atomic<bool> firstWheelReady = false, secondWheelReady = false, thirdWheelReady = false, fourthWheelReady = false, fuelReady = false; 
     bool firstWheelHandled = false, secondWheelHandled = false, thirdWheelHandled= false, fourthWheelHandled = false, fuelHandled = false; 
-    std::mutex firstWheelMtx, secondWheelMtx, thirdWheelMtx, fourthWheelMtx, fuelMtx, wheelStockMtx, fuelStockMtx;
+    std::mutex firstWheelMtx, secondWheelMtx, thirdWheelMtx, fourthWheelMtx, fuelMtx, wheelStockMtx, fuelStockMtx, waitingForWheelMtx;
     std::atomic<float> fuelNeeded = 0.0f;
+    void wait();
+	void notify();
 
 private:
+    std::condition_variable_any cv;
     std::atomic<PitstopState> status = PitstopState::FREE;
     const int id;
     std::atomic<float> firstWheelProgress = 0.0f;

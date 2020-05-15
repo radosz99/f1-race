@@ -6,13 +6,26 @@
 Pitstop::Pitstop(int id) : id(id)
 {
     fuelStock = static_cast<float> (static_cast<float>(Random().randomInt(50,100))/10);
-    wheelStock = Random().randomInt(20,40);
+    wheelStock = Random().randomInt(5,10);
 }
 
 PitstopState Pitstop::getStatus() const
 {
     return status;
 }
+
+void Pitstop::wait()
+{
+	std::unique_lock<std::mutex> lock(waitingForWheelMtx);
+	cv.wait(lock);
+}
+
+void Pitstop::notify()
+{
+    std::unique_lock<std::mutex> lock(waitingForWheelMtx);
+	cv.notify_one();
+}
+
 
 void Pitstop::setStatus(PitstopState newStatus)
 {
