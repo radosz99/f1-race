@@ -33,8 +33,8 @@ void Engineer::run()
                         {
                             pitstop.wait();
                         }
-                        pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
+                        pitstop.setWheelStock(pitstop.getWheelStock() - 1);
+                        pitstop.setUsedWheels(pitstop.getUsedWheels() + 1);
                         doActivity(1);
                         pitstop.firstWheelReady = true;
                         activity = -1;
@@ -52,8 +52,8 @@ void Engineer::run()
                         {
                             pitstop.wait();
                         }
-                        pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
+                        pitstop.setWheelStock(pitstop.getWheelStock() - 1);
+                        pitstop.setUsedWheels(pitstop.getUsedWheels() + 1);
                         doActivity(2);
                         pitstop.secondWheelReady = true;
                         activity = -1;
@@ -71,8 +71,8 @@ void Engineer::run()
                         {
                             pitstop.wait();
                         }
-                        pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
+                        pitstop.setWheelStock(pitstop.getWheelStock() - 1);
+                        pitstop.setUsedWheels(pitstop.getUsedWheels() + 1);
                         doActivity(3);
                         pitstop.thirdWheelReady = true;
                         activity = -1;
@@ -90,15 +90,15 @@ void Engineer::run()
                         {
                             pitstop.wait();
                         }
-                        pitstop.setWheelStock(pitstop.getWheelStock()-1);
-                        pitstop.setUsedWheels(pitstop.getUsedWheels()+1);
+                        pitstop.setWheelStock(pitstop.getWheelStock() - 1);
+                        pitstop.setUsedWheels(pitstop.getUsedWheels() + 1);
                         doActivity(4);
                         pitstop.fourthWheelReady = true;
                         activity = -1;
                         pitstop.fourthWheelMtx.unlock();
                     }
                 }
-                
+
                 if(!pitstop.fuelReady && !pitstop.fuelHandled)
                 {
                     if(pitstop.fuelMtx.try_lock())
@@ -131,7 +131,7 @@ void Engineer::run()
             pitstop.secondWheelHandled= false;
             pitstop.thirdWheelHandled= false;
             pitstop.fourthWheelHandled = false;
-            while(pitstop.getStatus()==PitstopState::BUSY)
+            while(pitstop.getStatus() == PitstopState::BUSY && raceCont)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
@@ -141,9 +141,9 @@ void Engineer::run()
 
 void Engineer::doActivity(int id)
 {
-    int delayCount = 150 - 80*skill;
+    int delayCount = 150 - 80 * skill;
 
-	for (int i = 1; i <= delayCount; i++)
+	for (int i = 1; i <= delayCount && raceCont; i++)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
         switch(id)
@@ -169,6 +169,7 @@ void Engineer::doActivity(int id)
 void Engineer::setRaceCont(bool value)
 {
     raceCont = value;
+    pitstop.notifyAll();
 }
 
 int Engineer::getSkill() const

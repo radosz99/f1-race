@@ -34,6 +34,7 @@ public:
     std::atomic<float> fuelNeeded = 0.0f;
     void wait();
 	void notify();
+    void notifyAll();
 
 private:
     std::condition_variable_any cv;

@@ -27,6 +27,13 @@ void Pitstop::notify()
 }
 
 
+void Pitstop::notifyAll()
+{
+    std::unique_lock<std::mutex> lock(waitingForWheelMtx);
+	cv.notify_all();
+}
+
+
 void Pitstop::setStatus(PitstopState newStatus)
 {
     status = newStatus;

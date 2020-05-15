@@ -50,8 +50,17 @@ void PitstopManager:: makePitstop(int pitstopId, float fuelCondition)
     pitstopes[pitstopId].fuelNeeded = 1 - fuelCondition;
 
     while(!pitstopes[pitstopId].fuelReady || !pitstopes[pitstopId].firstWheelReady|| !pitstopes[pitstopId].secondWheelReady ||
-            !pitstopes[pitstopId].thirdWheelReady || !pitstopes[pitstopId].fourthWheelReady)
+            !pitstopes[pitstopId].thirdWheelReady || !pitstopes[pitstopId].fourthWheelReady && raceCont)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));    
+    }
+}
+
+void PitstopManager::setRaceCont(bool newRaceCont)
+{
+    raceCont = newRaceCont;
+    for(size_t i = 0; i < pitstopes.size(); i++)
+    {
+        pitstopes[i].notifyAll();
     }
 }

@@ -4,6 +4,7 @@
 #include "Pitstop.hpp"
 #include "PitstopState.hpp"
 #include "PitstopManager.hpp"
+#include <iostream>
 
 Bolide::Bolide(int id, Road &road, PitstopManager &pitstopManager): id(id), road(road), pitstopManager(pitstopManager), thread(&Bolide::run, this)
 {

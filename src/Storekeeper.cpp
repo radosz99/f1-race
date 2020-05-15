@@ -17,6 +17,7 @@ void Storekeeper::run()
 {
     while(raceCont)
     {
+        //std::cout<<raceCont;
         //TODO: filling fuel tank
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         if(getWheel())

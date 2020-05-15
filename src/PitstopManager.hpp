@@ -15,8 +15,11 @@ public:
 	std::array<Engineer, 9> &getEngineers();
     int getFreePitstop();
     void makePitstop(int pitstopId, float fuelCondition);
+	void setRaceCont(bool newRaceCont);
+
 
 private:
+	std::atomic<bool>raceCont = true;
     std::mutex askingMutex;
 	std::array<Pitstop, 3> pitstopes
 	{

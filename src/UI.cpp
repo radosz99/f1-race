@@ -303,6 +303,7 @@ void UI::endVisualisation()
                 {
                     pitstopManager.getEngineers()[i].setRaceCont(false);
                 }
+                pitstopManager.setRaceCont(false);
 
                 for(size_t i = 0; i < storekeepers.size(); i++)
                 {
