@@ -1,3 +1,3 @@
 #pragma once
 
-enum class StorekeeperState {RECYCLING, SEARCHING, FREE};
+enum class StorekeeperState {WHEEL_RECYCLING, SEARCHING, REFUELING};
