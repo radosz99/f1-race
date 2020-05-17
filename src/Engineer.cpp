@@ -11,6 +11,7 @@ Engineer::Engineer(int id, Pitstop &pitstop):id(id), pitstop(pitstop),thread(&En
 
 Engineer::~Engineer()
 {
+    std::cout << "Engineer end" << std::endl;
     thread.join();
 }
 
@@ -131,8 +132,11 @@ void Engineer::run()
             pitstop.secondWheelHandled= false;
             pitstop.thirdWheelHandled= false;
             pitstop.fourthWheelHandled = false;
-            pitstop.wait();
-            pitstop.setStatus(PitstopState::FREE);
+            // pitstop.wait();
+            // pitstop.setStatus(PitstopState::FREE);
+            while(pitstop.getStatus() != PitstopState::FREE &&  raceCont){
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
         }
     }
 }

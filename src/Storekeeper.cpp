@@ -11,6 +11,7 @@ Storekeeper::Storekeeper(std::array<Pitstop, 3>&pitstopes): pitstopes(pitstopes)
 
 Storekeeper::~Storekeeper()
 {
+    std::cout << "Storekeeper end" << std::endl;
     thread.join();
 }
 
