@@ -26,5 +26,5 @@ $ ./f1-race
 
 # Screen
 
-![](https://github.com/radosz99/f1-race/blob/master/ezgif.com-gif-maker.gif)
+![](https://github.com/radosz99/f1-race/blob/master/race.gif)
 
