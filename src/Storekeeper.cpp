@@ -28,13 +28,20 @@ void Storekeeper::run()
         if(getWheel())
         {
             state = StorekeeperState::WHEEL_RECYCLING;
+<<<<<<< HEAD
             int delayCount = 180 - 80 * skill;
+=======
+            int delayCount = 150 - 80 * skill;
+>>>>>>> dev
             for (int i = 1; i <= delayCount && raceCont; i++)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 progress = static_cast<float>(i) / static_cast<float>(delayCount);
             }
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
             std::scoped_lock(pitstopes[0].wheelStockMtx, pitstopes[1].wheelStockMtx, pitstopes[2].wheelStockMtx);
             int min = INT_MAX;
             int pitstopId = 0;
@@ -86,6 +93,11 @@ bool Storekeeper::getWheel()
         }
     }
     return false;
+}
+
+float Storekeeper::getProgress() const
+{
+    return progress;
 }
 
 std::string Storekeeper::getStorekeeperStateString()const

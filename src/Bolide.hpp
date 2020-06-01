@@ -28,6 +28,7 @@ public:
     Road &road;
     const float FUEL_RATIO_ALERT = 0.05f;
     int getFailureCounter() const;
+    long getDistance() const;
     int getSkill() const;
     bool getOvertakingUp() const;
     int getTurbo() const;
@@ -36,6 +37,7 @@ public:
 
 
 private:
+    int waitingCounter = 0;
     int pitstopId = -1;
     int id;
     int failureCounter = 0;

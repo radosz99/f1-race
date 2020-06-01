@@ -26,8 +26,8 @@ void Bolide::run()
     while(!road.getRaceCont());
     while(road.getRaceCont())
     {
-        fuelCondition = fuelCondition * 0.995;
-        int minimumDelay = (35 - 15*fuelCondition)/skill - turbo;
+        fuelCondition = fuelCondition * 0.997;
+        int minimumDelay = (25 - 15*fuelCondition)/skill - turbo;
         int delay = Random().randomInt(minimumDelay, minimumDelay + 20);
         
         if(direction == Direction::DOWN || direction == Direction::UP || direction == Direction::UP_PIT_STOP)
@@ -143,6 +143,7 @@ std::pair<int,int> Bolide::downMode(int x, int y)
     }
     if(x > road.BORDER_DOWN)
     {
+        distance++;
         direction = Direction::RIGHT;
     }
     return std::make_pair(x, y);
@@ -162,6 +163,7 @@ std::pair<int,int> Bolide::leftMode(int x, int y)
         if(failureCounter > 3 && y > road.BORDER_LEFT + 15 && !road.checkIfPositionOccupied(x-4, y, id)){
             turbo = 20;
             overtakingUp = true;
+            waitingCounter = 0;
             direction = Direction::LEFT_UP;
         }
     }
@@ -185,8 +187,12 @@ std::pair<int,int> Bolide::leftPSMode(int x, int y)
     if(y <= road.PIT_STOP_BORDER_RIGHT)
     {
         fillFuelTank();
+<<<<<<< HEAD
         //pitstopManager.getPitstopes()[pitstopId].notifyAll();
         pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::FREE);
+=======
+        pitstopManager.getPitstopes()[pitstopId].notifyAll();
+>>>>>>> dev
         pitstopId = -1;
         direction = Direction::UP_PIT_STOP;
     }
@@ -266,6 +272,13 @@ std::pair<int,int> Bolide::leftDownMode(int x, int y, int &counter)
 
 std::pair<int,int> Bolide::leftUpMode(int x, int y)
 {
+    if(waitingCounter > 20)
+    {
+        direction = Direction::LEFT;
+        failureCounter = 0;
+        return std::make_pair(x, y);
+    }
+
     int help_y = y - 1;
     int help_x = x;
     if(x > road.UP_UPPATH_COORD_X) // if still changing path
@@ -283,8 +296,13 @@ std::pair<int,int> Bolide::leftUpMode(int x, int y)
         y--;
         x = help_x;
     }
+    else
+    {
+        waitingCounter++;
+    }
     if(y < road.BORDER_LEFT)
     {
+        waitingCounter = 0;
         direction = Direction::DOWN;
     }
     return std::make_pair(x, y);
@@ -338,7 +356,7 @@ std::pair<int,int> Bolide::rightMode(int x, int y, int &counter)
         x = help_x;
     }
             
-    if(y >= road.BORDER_RIGHT && state == State::DRIVING) // if right limit reached
+    if(y >= road.BORDER_RIGHT && state == State::DRIVING || (state == State::DRIVING_NEED_TO_PIT_STOP && x < road.DOWN_DOWNPATH_COORD_X && y >= road.BORDER_RIGHT)) // if right limit reached
     {
         direction = Direction::UP;
     }
@@ -484,4 +502,9 @@ int Bolide::getOvertakingCounter() const
 int Bolide::getPitstopId() const
 {
     return pitstopId;
+}
+
+long Bolide::getDistance() const
+{
+    return distance;
 }
