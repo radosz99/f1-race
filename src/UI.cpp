@@ -278,52 +278,29 @@ void UI::update()
         attron(COLOR_PAIR(7));
         mvprintw(40 - i*17, 161, "1 [");
         attron(COLOR_PAIR(2));
-<<<<<<< HEAD
-        mvprintw(40 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getFirstWheelProgress()).c_str());
-=======
         mvprintw(40 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getFirstWheelProgress(),34).c_str());
->>>>>>> dev
         attroff(COLOR_PAIR(2));
         mvprintw(40 - i*17, 198, "]");
         mvprintw(41 - i*17, 161, "2 [");
         attron(COLOR_PAIR(2));
-<<<<<<< HEAD
-        mvprintw(41 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getSecondWheelProgress()).c_str());
-=======
         mvprintw(41 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getSecondWheelProgress(),34).c_str());
->>>>>>> dev
         attroff(COLOR_PAIR(2));
         mvprintw(41 - i*17, 198, "]");
         mvprintw(42 - i*17, 161, "3 [");
         attron(COLOR_PAIR(2));
-<<<<<<< HEAD
-        mvprintw(42 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getThirdWheelProgress()).c_str());
-=======
         mvprintw(42 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getThirdWheelProgress(),34).c_str());
->>>>>>> dev
         attroff(COLOR_PAIR(2));
         mvprintw(42 - i*17, 198, "]");
         mvprintw(43 - i*17, 161, "4 [");
         attron(COLOR_PAIR(2));
-<<<<<<< HEAD
-        mvprintw(43 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getFourthWheelProgress()).c_str());
-=======
         mvprintw(43 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getFourthWheelProgress(),34).c_str());
->>>>>>> dev
         attroff(COLOR_PAIR(2));
         mvprintw(43 - i*17, 198, "]");
         mvprintw(44 - i*17, 161, "f [");
         attron(COLOR_PAIR(2));
-<<<<<<< HEAD
-        mvprintw(44 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getFuelProgress()).c_str());
-        attroff(COLOR_PAIR(2));
-        mvprintw(44 - i*17, 198, "]");
-
-=======
         mvprintw(44 - i*17, 164, getProgressBar(pitstopManager.getPitstopes()[i].getFuelProgress(),34).c_str());
         attroff(COLOR_PAIR(2));
         mvprintw(44 - i*17, 198, "]");
->>>>>>> dev
         engineer += " 3    ";
         mvprintw(46 - i*17, 161, engineer.c_str());
         wheel += " " + std::to_string(pitstopManager.getPitstopes()[i].getWheelStock()) + " | " + std::to_string(pitstopManager.getPitstopes()[i].getUsedWheels()) + "   ";
@@ -340,10 +317,6 @@ void UI::update()
 
 std::string UI::getProgressBar(float progress, int barLength)
 {
-<<<<<<< HEAD
-    int barLength = 34;
-=======
->>>>>>> dev
     std::string finString = "";
     std::string progressInPercent = std::to_string((int)std::round(progress * 100));
     int lpad = std::round(progress * barLength);

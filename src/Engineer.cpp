@@ -132,16 +132,8 @@ void Engineer::run()
             pitstop.secondWheelHandled= false;
             pitstop.thirdWheelHandled= false;
             pitstop.fourthWheelHandled = false;
-<<<<<<< HEAD
-            // pitstop.wait();
-            // pitstop.setStatus(PitstopState::FREE);
-            while(pitstop.getStatus() != PitstopState::FREE &&  raceCont){
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-=======
             pitstop.wait();
             pitstop.setStatus(PitstopState::FREE);
->>>>>>> dev
         }
     }
 }

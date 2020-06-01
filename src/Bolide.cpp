@@ -14,7 +14,6 @@ Bolide::Bolide(int id, Road &road, PitstopManager &pitstopManager): id(id), road
 
 Bolide::~Bolide()
 {
-    std::cout << "Bolide end" << std::endl;
     thread.join();
 }
 
@@ -187,12 +186,7 @@ std::pair<int,int> Bolide::leftPSMode(int x, int y)
     if(y <= road.PIT_STOP_BORDER_RIGHT)
     {
         fillFuelTank();
-<<<<<<< HEAD
-        //pitstopManager.getPitstopes()[pitstopId].notifyAll();
-        pitstopManager.getPitstopes()[pitstopId].setStatus(PitstopState::FREE);
-=======
         pitstopManager.getPitstopes()[pitstopId].notifyAll();
->>>>>>> dev
         pitstopId = -1;
         direction = Direction::UP_PIT_STOP;
     }
