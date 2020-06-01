@@ -24,3 +24,7 @@ $ ./f1-race
 # Prerequisites
 - [ncurses](https://en.wikipedia.org/wiki/Ncurses)
 
+# Screen
+
+![](https://github.com/radosz99/f1-race/blob/master/ezgif.com-gif-maker.gif)
+
