@@ -32,5 +32,5 @@ $ ./f1-race
 <a name="pre"></a>
 # Simulation
 Best to see in 150%. Chill, they are not new Schumachers, just simulation is speeded 4x up. Only 8 bolides because of colours variations :(
-![](https://github.com/radosz99/f1-race/blob/master/race.gif)
+![](https://github.com/radosz99/f1-race/blob/master/cropped-resized.gif)
 
