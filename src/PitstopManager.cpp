@@ -28,7 +28,7 @@ int PitstopManager::getFreePitstop()
     std::scoped_lock(askingMutex);
     int pitstopId = -1;
     bool free = false;
-    while(!free)
+    while(!free && raceCont)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));  
         for(size_t i = 0; i < pitstopes.size(); i++)

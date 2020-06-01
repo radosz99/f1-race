@@ -131,17 +131,15 @@ void Engineer::run()
             pitstop.secondWheelHandled= false;
             pitstop.thirdWheelHandled= false;
             pitstop.fourthWheelHandled = false;
-            while(pitstop.getStatus() == PitstopState::BUSY && raceCont)
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
+            pitstop.wait();
+            pitstop.setStatus(PitstopState::FREE);
         }
     }
 }
 
 void Engineer::doActivity(int id)
 {
-    int delayCount = 150 - 80 * skill;
+    int delayCount = 120 - 80 * skill;
 
 	for (int i = 1; i <= delayCount && raceCont; i++)
 	{

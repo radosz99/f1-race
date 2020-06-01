@@ -6,7 +6,7 @@
 Pitstop::Pitstop(int id) : id(id)
 {
     fuelStock = static_cast<float> (static_cast<float>(Random().randomInt(50,100))/10);
-    wheelStock = Random().randomInt(5,10);
+    wheelStock = Random().randomInt(15,20);
 }
 
 PitstopState Pitstop::getStatus() const

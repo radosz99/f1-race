@@ -11,7 +11,7 @@ TrackManager::~TrackManager()
 {
 }
 
-const std::array<Bolide, 10> &TrackManager::getBolides() 
+const std::array<Bolide, 14> &TrackManager::getBolides() 
 {
 	return bolides;
 }
