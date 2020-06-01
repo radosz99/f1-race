@@ -3,6 +3,7 @@
 
 UI::UI(const std::array<Bolide,14>& bolides, Road &road, PitstopManager &pitstopManager, std::array<Storekeeper, 2>& storekeepers): bolides(bolides), road(road), pitstopManager(pitstopManager), storekeepers(storekeepers)
 {
+    //inicjalizacja
 	initscr();
 	cbreak();
     noecho();
