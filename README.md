@@ -27,7 +27,7 @@ $ ./f1-race
 <a name="pre"></a>
 # Prerequisites
 - [ncurses](https://en.wikipedia.org/wiki/Ncurses)
-- [compilator with c++17 support](https://gcc.gnu.org/)
+- [compiler with c++17 support](https://gcc.gnu.org/)
 
 <a name="pre"></a>
 # Simulation
